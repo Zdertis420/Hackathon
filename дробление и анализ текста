@@ -1,23 +1,36 @@
 from os import listdir
 
-files = [f for f in listdir("D:\\Users\Student\Documents\Хакатон\docs\docs\\utf8")]
+# Все файлы из папки
+files = [f for f in listdir("C:\\Users\\andre\Documents\Хакатон\docs\docs\\utf8")]
 
+# Преобразование документов в списки
 lists = []
 
 for file in files:
-    with open(f"D:/Users/Student/Documents/Хакатон/docs/docs/utf8/{file}", mode = 'r', encoding = 'utf-8') as f:
-        f = f.readlines()
+    with open(f"C:\\Users\\andre\Documents\Хакатон\docs\docs\\utf8\\{file}", mode = 'r', encoding = 'utf-8') as f:
+        f = [value for value in f.readlines() if value != "\n"]
         lists.append(f)
 
+# Срезание у строк списков \n в конце и перевод в верхний регистр
 for list in lists:
-    for i in range(len(list) - 1):
-        list[i] = list[i][:-2]
+    for i in range(len(list)):
+        list[i] = list[i][:-1]
+        list[i] = list[i].upper()
 
-s = []
-
+# Удаление мусора из всех строк
 for list in lists:
-    for string in list:
-        string = list(map(lambda a: a = "", string))
+    for string in range(len(list)):
+        for symb in list[string]:
+            n = ord(symb)
+            if not (n >= 1040 and n <= 1071) or n == 1025 or n == 32:
+                list[string] = list[string].replace(symb, " ", 1)
+
+# Цифры сверху в цикле это Юникод крайних русских букв и пару исключений
+# print(ord("А"), ord("Я"), ord("Ё"), ord(" "))
+
+
+# Создание новых списков со всеми словами из документа
+lists_words = []
 
 for list in lists:
     words = []
@@ -25,17 +38,6 @@ for list in lists:
         if string:
             words.extend(string.split())
     if words:
-        s.append(words)
+        lists_words.append(words)
 
-# top_words = []
-# max_list = max(s)
-#
-# for word in max_list:
-#     for i in s:
-#         if word in i:
-#             top_words.append(word)
-#
-# top_words = set(top_words)
-#
-# for i in top_words:
-#     print(i)
+# Избавление от мусорных слов
