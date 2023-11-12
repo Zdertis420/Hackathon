@@ -1,0 +1,39 @@
+from os import listdir
+
+files = [f for f in listdir("D:\\Users\Student\Documents\Хакатон\docs\docs\\utf8")]
+
+print(files)
+print()
+
+lists = []
+
+for file in files:
+    with open(f"D:/Users/Student/Documents/Хакатон/docs/docs/utf8/{file}", mode = 'r', encoding = 'utf-8') as f:
+        lists.append(f.readlines())
+
+for list in lists:
+    for i in range(len(list) - 1):
+        list[i] = list[i][:-2]
+
+s = []
+
+for list in lists:
+    words = []
+    for string in list:
+        if string:
+            words.extend(string.split())
+    if words:
+        s.append(words)
+
+# top_words = []
+# max_list = max(s)
+# 
+# for word in max_list:
+#     for i in s:
+#         if word in i:
+#             top_words.append(word)
+# 
+# top_words = set(top_words)
+# 
+# for i in top_words:
+#     print(i)
