@@ -40,13 +40,21 @@ for list in lists:
     if words:
         lists_words.append(words)
 
-# Перевод всех слов в начальную форму и удаление служебных частей речи (со вторым пока проблемы).
+# Перевод всех слов в начальную форму и удаление служебных частей речи.
+final_lists = []
+s = []
+
+with open("C:\\Users\\andre\Documents\Хакатон\\stopwords-ru.txt", mode = 'r', encoding = 'utf-8') as f:
+    stopwords = [i.strip() for i in f.readlines()]
 
 import pymorphy2
 morph = pymorphy2.MorphAnalyzer()
 
 for list in lists_words:
+    s = []
     for word in range(len(list)):
-        list[word] = morph.parse(list[word])[0].normal_form
+        if list[word].lower() not in stopwords:
+            s.append(morph.parse(list[word])[0].normal_form)
+    final_lists.append(s)
 
-print(lists_words)
+print(final_lists)
