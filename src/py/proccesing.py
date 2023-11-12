@@ -40,4 +40,22 @@ for list in lists:
     if words:
         lists_words.append(words)
 
-# Избавление от мусорных слов
+## Перевод всех слов в начальную форму. Раскомментируйте этот код ТОЛЬКО если вам не жалко времени, ну или если у вас есть кружка чая. 
+## 
+## Это счётчик слов чтобы не умереть со скуки, пока код компилится. Не обращайте внимания.
+# cc = 0
+# for i in lists_words:
+#     cc += len(i)
+# print(cc)
+# 
+# import pymorphy2
+# morph = pymorphy2.MorphAnalyzer()
+# 
+# c = 0
+# for list in lists_words:
+#     for word in range(len(list)):
+#         list[word] = morph.parse(list[word])[0].normal_form.upper()
+#         c += 1
+#         print(c)
+# 
+# print(lists_words)
