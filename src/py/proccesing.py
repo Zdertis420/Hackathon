@@ -54,7 +54,17 @@ for list in lists_words:
     s = []
     for word in range(len(list)):
         if list[word].lower() not in stopwords:
-            s.append(morph.parse(list[word])[0].normal_form)
+            s.append(morph.parse(list[word])[0].normal_form.upper())
     final_lists.append(s)
 
-print(final_lists)
+# Создание словаря со всеми ответами
+words_dict = {}
+answer_list = []
+
+for list in final_lists:
+    for word in list:
+        words_dict[word] = list.count(word)
+    answer_list.append(words_dict)
+    words_dict = {}
+
+print(answer_list)
