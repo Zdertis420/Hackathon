@@ -56,11 +56,10 @@ def process_func(path):
 
     morph = pymorphy3.MorphAnalyzer()
 
-    for list in lists_words:
+    for list_ in lists_words:
         s = []
-        for word in range(len(list)):
-            #if list[word].lower() not in stopwords:
-            s.append(morph.parse(list[word])[0].normal_form.upper())
+        for word in list_:
+            s.append(morph.parse(word)[0].normal_form.upper())
         final_lists.append(s)
 
     return final_lists
