@@ -1,6 +1,9 @@
 from os import listdir
 import pymorphy2
 
+from tkinter import *
+from tkinter import filedialog
+
 #############################################################################################################################################################################
 
 def process_func(path):
@@ -60,13 +63,20 @@ def process_func(path):
                 s.append(morph.parse(list[word])[0].normal_form.upper())
         final_lists.append(s)
 
-
     return final_lists
-
 
 ############################################################################################################################################################################
 
-path = "C:/Users/andre/Documents/Хакатон"
+path = filedialog.askdirectory()
+
+if path != "":
+    path = str(path)
+else:
+    exit()
+
+print("Ожидайте...")
+
+# path = "C:/Users/andre/Documents/Хакатон"
 # path = input()
 
 final_lists = process_func(path)
