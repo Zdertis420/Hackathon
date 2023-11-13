@@ -6,13 +6,13 @@ import pymorphy2
 def process_func(path):
 
     # Все файлы из папки ####################################################################################################################################################
-    files = [f for f in listdir(f"{path}/docs/utf8")]
+    files = [f for f in listdir(f"{path}/docs/docs/utf8")]
 
     # Преобразование документов в списки #####################################################################################################################################
     lists = []
 
     for file in files:
-        with open(f"{path}//docs/utf8/{file}", mode='r', encoding='utf-8') as f:
+        with open(f"{path}/docs/docs/utf8/{file}", mode='r', encoding='utf-8') as f:
             f = [value for value in f.readlines() if value != "\n"]
             lists.append(f)
 
@@ -66,20 +66,20 @@ def process_func(path):
 
 ############################################################################################################################################################################
 
-path = "/home/user/Загрузки/"
+path = "C:/Users/andre/Documents/Хакатон"
 # path = input()
 
-print(process_func(path))
+final_lists = process_func(path)
 
 
-# # Создание словаря со всеми ответами
-# words_dict = {}
-# answer_list = []
-#
-# for list in final_lists:
-#     for word in list:
-#         words_dict[word] = list.count(word)
-#     answer_list.append(words_dict)
-#     words_dict = {}
-#
-# print(answer_list)
+# Создание словаря со всеми ответами
+words_dict = {}
+answer_list = []
+
+for list in final_lists:
+    for word in list:
+        words_dict[word] = list.count(word)
+    answer_list.append(sorted(words_dict.items(), key = lambda items: items[1], reverse = True))
+    words_dict = {}
+
+print(answer_list)
