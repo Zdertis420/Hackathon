@@ -1,5 +1,5 @@
 from os import listdir
-import pymorphy2
+import pymorphy3
 
 from tkinter import *
 from tkinter import filedialog
@@ -9,13 +9,13 @@ from tkinter import filedialog
 def process_func(path):
 
     # Все файлы из папки ####################################################################################################################################################
-    files = [f for f in listdir(f"{path}/docs/docs/utf8")]
+    files = [f for f in listdir(f"{path}")]
 
     # Преобразование документов в списки #####################################################################################################################################
     lists = []
 
     for file in files:
-        with open(f"{path}/docs/docs/utf8/{file}", mode='r', encoding='utf-8') as f:
+        with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
             f = [value for value in f.readlines() if value != "\n"]
             lists.append(f)
 
@@ -51,16 +51,16 @@ def process_func(path):
     final_lists = []
     s = []
 
-    with open(f"{path}/stopwords-ru.txt", mode='r', encoding='utf-8') as f:
-        stopwords = [i.strip() for i in f.readlines()]
+    #with open(f"C:/Users/andre/Documents/Хакатон/stopwords-ru.txt", mode='r', encoding='utf-8') as f:
+    #    stopwords = [i.strip() for i in f.readlines()]
 
-    morph = pymorphy2.MorphAnalyzer()
+    morph = pymorphy3.MorphAnalyzer()
 
     for list in lists_words:
         s = []
         for word in range(len(list)):
-            if list[word].lower() not in stopwords:
-                s.append(morph.parse(list[word])[0].normal_form.upper())
+            #if list[word].lower() not in stopwords:
+            s.append(morph.parse(list[word])[0].normal_form.upper())
         final_lists.append(s)
 
     return final_lists
