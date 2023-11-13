@@ -22,6 +22,13 @@ def call_c(flags:         int,
 
     lib.test()
     print(lib.test())
+    x = ct.c_char_p(b"hello from C from Python from Linux")
+    lib.print(x)
+    test = np.array([b"string1", 
+                     b"string2!", 
+                     b"this is third string", 
+                     b"4.lmao."], dtype=ct.c_char_p)
+    
     return 
 
 
@@ -51,7 +58,7 @@ def main():
         exit()
 
     print("flags:", flags)
-    call_c(flags, "", "", "", "");
+    call_c(flags, "", "", "", "")
             
 if __name__ == "__main__":
     main()
