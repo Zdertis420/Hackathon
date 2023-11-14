@@ -1,70 +1,67 @@
-from os import listdir
-import pymorphy3
-
-from tkinter import *
+import numpy as np
+import os
 from tkinter import filedialog
+import re
+import pymorphy3
+import time
+start_time = time.time()
 
-#############################################################################################################################################################################
-
-def process_func(path):
-
-    # Все файлы из папки ####################################################################################################################################################
-    files = [f for f in listdir(f"{path}")]
-
-    # Преобразование документов в списки #####################################################################################################################################
-    lists = []
+def get_files(path):
+    files = [f for f in os.listdir(f"{path}")]
+    docs = []
 
     for file in files:
         with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
-            f = [value for value in f.readlines() if value != "\n"]
-            lists.append(f)
+            f = [value.strip().upper() for value in f.readlines() if value != "\n"]
+            docs.append(f)
 
-    # Срезание у строк списков \n в конце и перевод в верхний регистр ########################################################################################################
-    for list in lists:
-        for i in range(len(list)):
-            list[i] = list[i][:-1]
-            list[i] = list[i].upper()
+    return docs, files
 
-    # Удаление мусора из всех строк ##########################################################################################################################################
-    for list in lists:
-        for string in range(len(list)):
-            for symb in list[string]:
-                n = ord(symb)
-                if not (n >= 1040 and n <= 1071) or n == 1025 or n == 32:
-                    list[string] = list[string].replace(symb, " ", 1)
+def clean_files(doc):
+    doc = list(map(lambda s: re.sub(r'[^a-zA-Zа-яА-ЯёЁ\s]', '', s),doc))
 
-    # Цифры сверху в цикле это Юникод крайних русских букв и пару исключений
-    # print(ord("А"), ord("Я"), ord("Ё"), ord(" "))
+    return doc
 
-    # Создание новых списков со всеми словами из документа ##################################################################################################################
-    lists_words = []
+def get_words(doc):
+    docs_words = []
+    for string in doc:
+        docs_words.extend(string.split())
 
-    for list in lists:
-        words = []
-        for string in list:
-            if string:
-                words.extend(string.split())
-        if words:
-            lists_words.append(words)
+    return docs_words
 
-    # Перевод всех слов в начальную форму. #################################################################################################################################
-    final_lists = []
-    s = []
-
-    #with open(f"C:/Users/andre/Documents/Хакатон/stopwords-ru.txt", mode='r', encoding='utf-8') as f:
-    #    stopwords = [i.strip() for i in f.readlines()]
-
+def get_infinitive(doc):
     morph = pymorphy3.MorphAnalyzer()
+    docs_words = []
 
-    for list_ in lists_words:
-        s = []
-        for word in list_:
-            s.append(morph.parse(word)[0].normal_form.upper())
-        final_lists.append(s)
+    docs_words = list(map(lambda word: morph.parse(word)[0].normal_form.upper(), doc))
 
-    return final_lists
+    return docs_words
 
-############################################################################################################################################################################
+def get_answer(doc):
+    words_dict = {}
+
+    for word in doc:
+        words_dict[word] = doc.count(word)
+    words_dict = sorted(words_dict.items(), key = lambda items: items[1], reverse = True)
+
+    return words_dict
+
+def create_dir(docs, files_name):
+    os.mkdir(f'{path}/output')
+    for doc in range(len(docs)):
+        with open(f"{path}/output/{files_name[doc]}", mode='w', encoding='utf-8') as f:
+            for line in docs[doc]:
+                f.write(f'{line[0]}\t{line[1]}\n')
+
+def god_func(path):
+    docs, files_name = get_files(path)
+    docs = list(map(clean_files, docs))
+    docs = list(map(get_words, docs))
+    docs = list(map(get_infinitive, docs))
+    answer_list = list(map(get_answer, docs))
+    create_dir(answer_list, files_name)
+
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 path = filedialog.askdirectory()
 
@@ -73,22 +70,4 @@ if path != "":
 else:
     exit()
 
-print("Ожидайте...")
-
-# path = "C:/Users/andre/Documents/Хакатон"
-# path = input()
-
-final_lists = process_func(path)
-
-
-# Создание словаря со всеми ответами
-words_dict = {}
-answer_list = []
-
-for list in final_lists:
-    for word in list:
-        words_dict[word] = list.count(word)
-    answer_list.append(sorted(words_dict.items(), key = lambda items: items[1], reverse = True))
-    words_dict = {}
-
-print(answer_list)
+god_func(path)
