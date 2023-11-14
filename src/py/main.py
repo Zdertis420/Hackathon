@@ -3,6 +3,7 @@ import sys
 import pymorphy3 as pymorphy
 import numpy as np
 import ctypes as ct
+from typing import Tuple
 npct = np.ctypeslib
 
 
@@ -10,26 +11,33 @@ SHARED_LIBRARY_PATH = '/home/main/coding/mixed'
 SHARED_LIBRARY_NAME = 'main.so'
 COMMAND_FLAGS = {"analyze-docs"    : 0b00000001,
                  "analyze-themes"  : 0b00000010,
-                 "distribute_docs" : 0b00000100}
+                 "distribute-docs" : 0b00000100}
 lib = npct.load_library(SHARED_LIBRARY_NAME, SHARED_LIBRARY_PATH)
+libc = ct.CDLL("libc.so.6") # free(pointer)
 
 
-def call_c(flags:         int, 
+def array_to_c(arr: np.ndarray[str]) -> Tuple[ct.POINTER(ct.c_char_p), ct.c_int]:
+    c_arr = (ct.c_char_p * len(arr))(*np.char.encode(arr, 'utf-8'))
+    return ct.cast(c_arr, ct.POINTER(ct.c_char_p)), len(arr)
+    # как вызывать эту функцию, если Си принимает массив:
+    # lib.some_function(*array_to_c(твой_массив), остальные_аргументы)
+    # можно распаковать возвращаемый тип звёздочкой прям сходу
+
+
+def call_c(array_p:       ct.POINTER(ct.c_char_p),
+           array_s:       ct.c_int,
+           flags:         int, 
            path_to_docs:  str,
            analyze_out:   str,
            theme_div_out: str,
            final_out:     str):
-
-    lib.test()
-    print(lib.test())
-    x = ct.c_char_p(b"hello from C from Python from Linux")
-    lib.print(x)
-    test = np.array([b"string1", 
-                     b"string2!", 
-                     b"this is third string", 
-                     b"4.lmao."], dtype=ct.c_char_p)
-    
-    return 
+    test_f = lib.print_a
+    test_f.argtypes = [ct.POINTER(ct.c_char_p),
+                       ct.c_int,
+                       ct.c_int]
+    print(array_p, array_s, flags, path_to_docs, analyze_out, theme_div_out, final_out)
+    test_f(array_p, array_s, flags)
+    return
 
 
 def print_help():
@@ -58,7 +66,9 @@ def main():
         exit()
 
     print("flags:", flags)
-    call_c(flags, "", "", "", "")
+
+    test = np.array(["hello from python", "to C", "and back to python!"])
+    call_c(*array_to_c(test), flags, "", "", "", "")
             
 if __name__ == "__main__":
     main()
