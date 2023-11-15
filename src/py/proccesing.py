@@ -3,8 +3,6 @@ import os
 from tkinter import filedialog
 import re
 import pymorphy3
-import time
-start_time = time.time()
 
 def get_files(path):
     files = [f for f in os.listdir(f"{path}")]
@@ -60,8 +58,6 @@ def god_func(path):
     docs = map(get_infinitive, docs)
     answer_list = list(map(get_answer, docs))
     create_dir(answer_list, files_name)
-
-    print("--- %s seconds ---" % (time.time() - start_time))
 
 path = filedialog.askdirectory()
 
