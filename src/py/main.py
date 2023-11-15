@@ -28,7 +28,7 @@ def arrays_to_c(arr: list[list[str]]) -> Tuple[c_void_p, c_int]:
     for i in range(outer_len):
         current_length = len(arr[i]) + 1 # для nulptr в конце
         ret[i] = (c_char_p * current_length) ( *gen_c_array(arr[i]) )
-        print(*(cast(i, POINTER(c_int)) for i in ret[i]))
+        # print(*(cast(i, POINTER(c_int)) for i in ret[i])) ## THIS LINE CRASHES MY LINUX
     return cast(ret, c_void_p), outer_len
 
 

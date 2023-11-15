@@ -16,9 +16,9 @@ void print_2d_array(char*** array, size_t size)
 	for(int i = 0; i < size; ++i)
 	{
 		std::cout << "string " << i << std::endl;
-		for(char** p = array[i]; p; ++p)
+		for(char** p = array[i]; *p; ++p)
 		{
-			std::cout << p << ':' ;
+			std::cout << p << " - " ;
 			std::cout.flush();
 			std::cout << *p << " | ";
 		}
