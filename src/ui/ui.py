@@ -1,14 +1,15 @@
 import sys
 
-from PyQt6.QtWidgets import QMainWindow, QApplication
+from layout import Setup
+from PyQt6.QtWidgets import (QMainWindow,
+                             QApplication)
 
 
 class MainWin(QMainWindow):
     def __init__(self):
         super().__init__()
+        Setup.setupUi(object, MainWindow=MainWin)
 
-        self.setWindowTitle("Hackathon")
-        self.setGeometry(710, 300, 500, 500)
 
 
 app = QApplication(sys.argv)
