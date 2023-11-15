@@ -3,7 +3,7 @@ import sys
 import pymorphy3 as pymorphy
 import numpy as np
 import ctypes as ct
-from ctypes import POINTER, pointer, cast, c_char_p, c_void_p, c_int
+from ctypes import POINTER, pointer, cast, c_char_p, c_void_p, c_int, c_uint
 from typing import Tuple
 npct = np.ctypeslib
 
@@ -22,7 +22,7 @@ def gen_c_array(l: list[str]):
     yield None
 
 # возвращает УКАЗАТЕЛЬ И ВНЕШНЮЮ ДЛИНУ
-def arrays_to_c(arr: list[list[str]]) -> Tuple[c_void_p, c_int]:
+def arrays_to_c(arr: list[list[str]]) -> Tuple[c_void_p, c_uint]:
     outer_len = len(arr)
     ret = (POINTER(c_char_p) * outer_len) ( )
     for i in range(outer_len):
@@ -32,20 +32,18 @@ def arrays_to_c(arr: list[list[str]]) -> Tuple[c_void_p, c_int]:
     return cast(ret, c_void_p), outer_len
 
 
-def call_c(array_p:       c_void_p, # Укзатель на 1 элемент массива. Возвращается функцией arrays_to_c 
-           array_s:       c_int,    # Длина массива. Возвращается array_to_c
-           flags:         c_int,    # Флаги выполнения. Парсятся через аргументы командной строки. 
-                                    # Oтвечают за то, какие задания выполняются
-           path_to_docs:  str,      # Путь к документам. Необходим для 1 задания.
-           analyze_out:   str,      # Путь к выводу документов. Необходим, если выполняется 1 задание отдельно от всех.
-           analyze_in:    str,      # Путь в вводу анализированных документов. Нужен, если выполняется 2 задание отдельно от 1
-           theme_div_out: str,      # Путь к выводу документов, рассортированных по близости темы. Нужен, если выполняется 2 задание
-           theme_div_in:  str,      # Путь к вводу документов с близостью тем. Нужен, если выполняется 3 задание отдельно от 2.
-           final_out:     str       # Путь к финальному выводу. Нужен, если выполняется 3 задание.
-           ):
+def strings_to_c(*args):
+    for i in args:
+        if not i:
+            yield None
+        else:
+            yield i.encode('utf-8')
+    pass
+
+
+def test_c():
     test_f = lib.print_2d_array
-    test_f.argtypes = [c_void_p,
-                       c_int]
+    test_f.argtypes = [c_void_p, c_int]
     print(array_p, array_s, flags, path_to_docs, analyze_out, theme_div_out, final_out)
     test_arr =  \
     [
@@ -57,7 +55,37 @@ def call_c(array_p:       c_void_p, # Укзатель на 1 элемент м�
         ["whatsup everynyan", "[]"]
     ]
     test_f(*arrays_to_c(test_arr))
-    return
+
+
+def call_c(array_docs:    list[list[str]],  # Массив с документами 
+           array_themes:  list[list[str]],  # Массив с темами
+           flags:         int,      # Флаги выполнения. Парсятся через аргументы командной строки. 
+                                    # Oтвечают за то, какие задания выполняются
+           path_to_docs:  str,      # Путь к документам. Необходим для 1 задания.
+           analyze_out:   str,      # Путь к выводу документов. Необходим, если выполняется 1 задание отдельно от всех.
+           analyze_in:    str,      # Путь в вводу анализированных документов. Нужен, если выполняется 2 задание отдельно от 1
+           theme_div_out: str,      # Путь к выводу документов, рассортированных по близости темы. Нужен, если выполняется 2 задание
+           theme_div_in:  str,      # Путь к вводу документов с близостью тем. Нужен, если выполняется 3 задание отдельно от 2.
+           final_out:     str       # Путь к финальному выводу. Нужен, если выполняется 3 задание.
+           ):
+    driver_func = lib.driver
+    driver_func.argtypes = [c_uint,
+                            PONITER(POINTER(c_char_p)), c_uint,
+                            PONITER(POINTER(c_char_p)), c_uint,
+                            c_char_p, c_char_p, c_char_p, 
+                            c_char_p, c_char_p, c_char_p] 
+    driver_func.restype = c_char_p
+    
+    ## Никита или андрей, проведите проверку на аргументы
+    ## в сответствии с тем, что я выше описал
+    args = [flags,
+            *arrays_to_c(array_docs), *arrays_to_c(array_themes), 
+            *strings_to_c(path_to_docs, analyze_out, analyze_in, theme_div_out, theme_div_in, final_out)
+            ]
+    error = driver_func(*args)
+    if not error:
+        print("\x1b[91;1m", error, "\x1b[0m")
+        exit()
 
 
 def print_help():

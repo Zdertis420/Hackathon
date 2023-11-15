@@ -5,13 +5,16 @@ CXXSRCDIR = src/cpp
 OBJDIR = build
 VPATH = $(OBJDIR):$(PYSCRDIR):$(CXXSRCDIR)
 
-.PHONY: clean
+.PHONY: clean CXXSRCDIR/libvector.so
 
-libvector.so: vector.*
+all: $(OBJDIR)/libvector.so hack hack-ui
+
+$(OBJDIR)/libvector.so: vector.cpp vector.hpp
 	echo building libvector.so
-	g++ -fPIC -shared -o $(OBJDIR)/libevector.so $^ 
+	mkdir -p $(OBJDIR)
+	g++ -shared -fPIC -O2 -o "$(OBJDIR)/libevector.so" $< 
 
-hack: main.py processing.py
+hack: $(PYSRCDIR)/main.py $(PYSRCDIR)/processing.py
 	echo building python
 
 hack-ui: src/ui/*
@@ -19,5 +22,5 @@ hack-ui: src/ui/*
 
 clean:
 	echo cleaning build
-	$(RM) -r $(OBJDIR)
+	$(RM) -rf $(OBJDIR)
 
