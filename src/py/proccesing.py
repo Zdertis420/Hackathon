@@ -52,7 +52,7 @@ def create_dir(docs, files_name):
                 f.write(f'{line[0]}\t{line[1]}\n')
 
 def god_func(path):
-    # docs, files_name = get_files(path)
+    docs, files_name = get_files(path)
     # docs = map(clean_files, docs)
     # docs = map(get_words, docs)
     # docs = map(get_infinitive, docs)
