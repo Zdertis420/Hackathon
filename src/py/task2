@@ -1,20 +1,9 @@
 from task1 import god_func
 from tkinter import filedialog
-import time
-start_time = time.time()
 
-path_docs = filedialog.askdirectory()
-path_themes = filedialog.askdirectory()
+def god_func2():
+    path_docs = filedialog.askdirectory()
+    path_themes = filedialog.askdirectory()
 
-if path_docs != "":
-    path = str(path_docs)
-else:
-    exit()
-
-if path_themes != "":
-    path = str(path_themes)
-else:
-    exit()
-
-god_func(path_docs, flag=1)
-god_func(path_themes, flag=2)
+    god_func(path_docs, flag=2)
+    god_func(path_themes, flag=2)
