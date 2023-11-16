@@ -35,6 +35,18 @@ def get_infinitive(doc):
 
     return docs_words
 
+def del_stopwords(doc):
+    with open("stopwords-ru.txt", mode='r', encoding='utf-8') as f:
+        stopwords = list(map(lambda s: s.rstrip(), f.readlines()))
+
+    only_words = []
+
+    for word in doc:
+        if word not in stopwords:
+            only_words.append(word)
+
+    return only_words
+
 def get_answer(doc):
     words_dict = {}
 
@@ -67,6 +79,7 @@ def god_func(path='', flag=1):
     docs = list(map(clean_files, docs))
     docs = list(map(get_words, docs))
     docs = list(map(get_infinitive, docs))
+    docs = list(map(del_stopwords, docs))
     answer_list = list(map(get_answer, docs))
     create_dir(answer_list, files_name, path, flag)
 
