@@ -5,23 +5,28 @@ import numpy as np
 import ctypes as ct
 from ctypes import POINTER, pointer, cast, c_char_p, c_void_p, c_int, c_uint
 from typing import Tuple
+from random import randint
 npct = np.ctypeslib
 
 
-SHARED_LIBRARY_PATH = '/home/main/coding/Hackaton/src/cpp/'
+SHARED_LIBRARY_PATH = '/home/main/coding/Hackaton/build'
 SHARED_LIBRARY_NAME = 'libvector.so'
 COMMAND_FLAGS = {"analyze-docs"    : 0b00000001,
-                 "analyze-themes"  : 0b00000010} 
+                 "analyze-themes"  : 0b00000010,
+                 "all"             : 0b00000011} 
 lib = npct.load_library(SHARED_LIBRARY_NAME, SHARED_LIBRARY_PATH)
 libc = ct.CDLL("libc.so.6") # free(pointer)
 
+
 def perror(*args, **kwargs):
     print(*args, file = sys.stderr, **kwargs)
+
 
 def gen_c_array(l: list[str]):
     for i in l:
         yield i.encode('utf-8')
     yield None
+
 
 # возвращает УКАЗАТЕЛЬ И ВНЕШНЮЮ ДЛИНУ
 def arrays_to_c(arr: list[list[str]]) -> Tuple[c_void_p, c_uint]:
@@ -31,7 +36,7 @@ def arrays_to_c(arr: list[list[str]]) -> Tuple[c_void_p, c_uint]:
         current_length = len(arr[i]) + 1 # для nulptr в конце
         ret[i] = (c_char_p * current_length) ( *gen_c_array(arr[i]) )
         # print(*(cast(i, POINTER(c_int)) for i in ret[i])) ## THIS LINE CRASHES MY LINUX
-    return cast(ret, c_void_p), outer_len
+    return cast(ret, POINTER(POINTER(c_char_p))), outer_len
 
 
 def strings_to_c(*args):
@@ -72,8 +77,8 @@ def call_c(array_docs:    list[list[str]],  # Массив с документа
     driver_func = lib.driver
     driver_func.argtypes = [
         c_uint,
-        PONITER(POINTER(c_char_p)), c_uint,
-        PONITER(POINTER(c_char_p)), c_uint,
+        POINTER(POINTER(c_char_p)), c_uint,
+        POINTER(POINTER(c_char_p)), c_uint,
         c_char_p, c_char_p, c_char_p, 
         c_char_p, c_char_p
     ] 
@@ -128,9 +133,23 @@ def main():
         print()
 
     print("flags:", bool(flags&1), bool(flags&2))
+    # + ["THIS STRING IS EVERYWHERE"]
+    docsv = [
+        [str(i) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],
+        10*[str(randint(-10, 10)) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],
+        ["test", "lmao", "kill me"] + ["THIS STRING IS EVERYWHERE"],
+        ["empty", "aaa"] + ["THIS STRING IS EVERYWHERE"],
+        ["empty", "empty", "kill me"] + ["THIS STRING IS EVERYWHERE"],
+        2*[str(i**2) for i in range(100)] + ["THIS STRING IS EVERYWHERE"]
+    ];
+    themesv = [["test1"], ["test2"]]
+    print(*(i[-1] for i in docsv))
+    call_c(docsv, themesv, 3, "", "", "", "", "")
 
-    test = [["hello from python", "to C", "and back to python!"]]
-    call_c(*arrays_to_c(test), flags, "", "", "", "", "")
-            
+
+
+
+
 if __name__ == "__main__":
     main()
+
