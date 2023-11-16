@@ -53,11 +53,14 @@ def create_dir(docs, files_name):
 
 def god_func(path):
     docs, files_name = get_files(path)
-    docs = map(clean_files, docs)
-    docs = map(get_words, docs)
-    docs = map(get_infinitive, docs)
-    answer_list = list(map(get_answer, docs))
-    create_dir(answer_list, files_name)
+    # docs = map(clean_files, docs)
+    # docs = map(get_words, docs)
+    # docs = map(get_infinitive, docs)
+    # answer_list = list(map(get_answer, docs))
+    # create_dir(answer_list, files_name)
+    # Всё, что выше, записано в одну строку
+    create_dir(list(map(get_answer, (map(get_infinitive, (map(get_words, (map(clean_files, docs)))))))), files_name)
+
 
 path = filedialog.askdirectory()
 
