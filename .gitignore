@@ -1,3 +1,4 @@
 *.so
 data/
 build/
+compile.sh
