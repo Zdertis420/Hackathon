@@ -10,8 +10,6 @@ const char* driver (
     [[maybe_unused]] char* final_out
 ) {
 
-    std::cout << "Hello from C++!\n";
-
 	auto files = filemaps(docsc);
 	auto themes = filemaps(themesc);
     all_keys_t all_keys;
@@ -51,7 +49,7 @@ const char* driver (
         internal::clean_vectors(files_parsed, order);
 
 
-    // SANITY_CHECK(
+    // SANITY_CHECK (
     //     for (int i = 0; i < order.size(); ++i)
     //           std::cout << order[i] << " : " << files_parsed[1][i] << std::endl;
     // )
@@ -108,32 +106,47 @@ std::pair<std::vector<vec>, axis_order> internal::get_vectors(all_keys_t &all_ke
 
 void internal::clean_vectors(std::vector<vec> &files, axis_order &ord)
 {
-
     assert(files[0].size() == ord.size());
+    std::vector<double> variances(files.at(0).size());
+    //calvulate varianecs
+    /*  tf(X): N/n(X) ~ N/sqrt( n(X)^2 ) [Token frequency]
+     *  idf: log(N/D), где
+     *      N: files.size()
+     *      D: std::accumulate(files, {return | i[j] | <= 10e-6})
+     *
+     *  W: tf*idf
+     */
 
-	std::vector<double> variances(files.at(0).size());
-	// calvulate varianecs
-	for(int i = 0; i < files.at(0).size(); ++i)
-	{	// using a 2-pass algorithm
-		double mean = 0;
-		for (int j = 0; j < files.size(); ++j)
-		{
-            mean += files[j][i];
-		}
-        mean /= files.size();
-        double variance = 0;
-		for (int j = 0; j < files.size(); ++j)
-		{
-            double temp = files[j][i] - mean;
-			variance += temp*temp;
-		}
-		variance /= (files.size() - 1);
-        variances[i] = std::sqrt(variance);
+    for(int j = 0; j < files.at(0).size(); ++j)
+    {
+        uint32_t amount = 0;
+        for (int i = 0; i < files.size(); ++i)
+        {
+            if (files.at(i).at(j) != 0) ++amount;
+        }
     }
+
+//	for(int i = 0; i < files.at(0).size(); ++i)
+//	{	// using a 2-pass algorithm
+//		double mean = 0;
+//		for (int j = 0; j < files.size(); ++j)
+//        {
+//            mean += files[j][i];
+//        }
+//        mean /= files.size();
+//        double variance = 0;
+//		for (int j = 0; j < files.size(); ++j)
+//		{
+//            double temp = files[j][i] - mean;
+//			variance += temp*temp;
+//		}
+//		variance /= (files.size() - 1);
+//        variances[i] = std::sqrt(variance);
+//    }
 
     //calculating edge variance
     constexpr const double fraction = 1/5;
-    auto [min, max] = std::accumulate(
+    auto const [min, max] = std::accumulate(
         variances.cbegin(),
         variances.cend(),
         std::pair<double, double>{},
@@ -141,7 +154,8 @@ void internal::clean_vectors(std::vector<vec> &files, axis_order &ord)
         {
             return std::pair<double, double>{
                 std::min(val, min_max.first),
-                std::max(val, min_max.second)};
+                std::max(val, min_max.second)
+            };
         }
     );
     double edge = min + (max-min)*fraction;
@@ -175,15 +189,26 @@ void internal::clean_vectors(std::vector<vec> &files, axis_order &ord)
 
 double math::vector_abs(const vec &v)
 {
-    return std::sqrt( std::accumulate(v.cbegin(), v.cend(), 0.0, [](auto acc, auto x){return acc + x*x;}) );
+    return std::sqrt( std::accumulate(v.cbegin(), v.cend(), 0.0, [] (auto acc, auto x) {return acc + x*x;}) );
 }
 
 
-void math::normalize(vec &v)
+vecd math::normalize(const vec &v)
 {
     const double abs = vector_abs(v);
-    std::for_each(v.begin(), v.end(), [abs](auto x) {x/=abs;} );
+    auto ret = vecd();
+    ret.reserve(v.size());
+    std::for_each(v.cbegin(), v.cend(), [abs, &ret] (auto x) {ret.push_back(x/abs);} );
 #ifdef DEBUG
     assert( std::abs(vector_abs(v) - 1) < 0.0001 );
 #endif
+}
+
+double math::dot_product(const vec &x, const vec &y)
+{
+    double ret = 0;
+    assert(x.size() == y.size());
+    for(int i = 0; i < x.size(); ++i)
+        ret += (x[i]*y[i]);
+    return ret;
 }

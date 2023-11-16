@@ -5,5 +5,15 @@ def god_func2():
     path_docs = filedialog.askdirectory()
     path_themes = filedialog.askdirectory()
 
-    god_func(path_docs, flag=2)
-    god_func(path_themes, flag=2)
+    ## пусть возвращает 2 списка в таком формате:
+    ## [
+    ##    [""], ""] ## документ 1
+    ##    [""]     ## документ 2
+    ## ]
+
+    return god_func(in_path=path_docs, out_path = in_path + "/output", flag=2), \
+           god_func(in_path=path_themes, out_path = in_path + "/output_themes", flag=2)
+
+
+if __name__ == "__main__":
+    god_func2()

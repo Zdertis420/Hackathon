@@ -22,7 +22,7 @@ $(OBJDIR)/libvector.so: vector.cpp vector.hpp
 	mkdir -p $(OBJDIR)
 	g++ $(CXXFLAGS) -o "$(OBJDIR)/libvector.so" $< 
 
-$(OBJDIR)/hack: $(PYSRCDIR)/main.py
+$(OBJDIR)/hack: $(PYSRCDIR)/main.py 
 	echo building python
 	echo "#!/home/main/coding/py/venv/bin/python3" > $@
 	cat $< >> $@
@@ -32,7 +32,7 @@ $(OBJDIR)/hack-ui: src/ui/*
 	echo building UI
 
 run: all
-	build/hack --task 0
+	build/hack --task 0 -i 00 -o -
 
 clean:
 	echo cleaning build

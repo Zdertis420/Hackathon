@@ -44,7 +44,7 @@ def del_stopwords(doc):
     for word in doc:
         if word not in stopwords:
             only_words.append(word)
-
+    
     return only_words
 
 def get_answer(doc):
@@ -71,16 +71,21 @@ def create_dir(docs, files_name, path, flag):
                 for line in docs[doc]:
                     f.write(f'{line[0]}\t{line[1]}\n')
 
-def god_func(path='', flag=1):
-    if flag == 1:
-        path = filedialog.askdirectory()
+def god_func(**kwargs):
 
-    docs, files_name, path_docs = get_files(path)
+    in_path = kwards["in_path"]
+    out_pth = kwargs["out_path"]
+    flag = kwargs["flag"]
+
+
+    docs, files_name, path_docs = get_files(in_path)
     docs = map(clean_files, docs)
     docs = map(get_words, docs)
     docs = map(get_infinitive, docs)
     docs = map(del_stopwords, docs)
     answer_list = list(map(get_answer, docs))
-    create_dir(answer_list, files_name, path, flag)
+    create_dir(answer_list, files_name, out_path, flag)
 
     print("--- %s seconds ---" % (time.time() - start_time))
+    return list(docs)
+

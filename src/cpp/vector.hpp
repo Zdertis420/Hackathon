@@ -30,8 +30,8 @@ std::cout << __FILE__ << ':' << __FUNCTION__ << ':' << __LINE__ << std::endl
 using all_keys_t = std::unordered_set<std::string_view>;
 using filemap = std::unordered_map<std::string_view, uint32_t>;
 using filemaps = std::vector<filemap>;
-//using vec = std::vector<uint32_t>;
-using vec = std::vector<double>;
+using vec = std::vector<uint32_t>;
+using vecd = std::vector<double>;
 using axis_order = std::vector<std::string>;
 
 enum struct tasks : unsigned int {
@@ -68,7 +68,8 @@ std::unordered_set<std::string_view> &&normalize_map_fields(filemap& files);
 namespace math {
 
 double vector_abs(const vec &v);
-void normalize(vec& v);
+vecd normalize(const vec &v);
+double dot_product(const vec &x, const vec &y);
 
 }// namespace math
 
