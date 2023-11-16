@@ -76,10 +76,10 @@ def god_func(path='', flag=1):
         path = filedialog.askdirectory()
 
     docs, files_name, path_docs = get_files(path)
-    docs = list(map(clean_files, docs))
-    docs = list(map(get_words, docs))
-    docs = list(map(get_infinitive, docs))
-    docs = list(map(del_stopwords, docs))
+    docs = map(clean_files, docs)
+    docs = map(get_words, docs)
+    docs = map(get_infinitive, docs)
+    docs = map(del_stopwords, docs)
     answer_list = list(map(get_answer, docs))
     create_dir(answer_list, files_name, path, flag)
 
