@@ -11,10 +11,12 @@ npct = np.ctypeslib
 SHARED_LIBRARY_PATH = '/home/main/coding/Hackaton/src/cpp/'
 SHARED_LIBRARY_NAME = 'libvector.so'
 COMMAND_FLAGS = {"analyze-docs"    : 0b00000001,
-                 "analyze-themes"  : 0b00000010,
-                 "distribute-docs" : 0b00000100}
+                 "analyze-themes"  : 0b00000010} 
 lib = npct.load_library(SHARED_LIBRARY_NAME, SHARED_LIBRARY_PATH)
 libc = ct.CDLL("libc.so.6") # free(pointer)
+
+def perror(*args, **kwargs):
+    print(*args, file = sys.stderr, **kwargs)
 
 def gen_c_array(l: list[str]):
     for i in l:
@@ -59,29 +61,30 @@ def test_c():
 
 def call_c(array_docs:    list[list[str]],  # Массив с документами 
            array_themes:  list[list[str]],  # Массив с темами
-           flags:         int,      # Флаги выполнения. Парсятся через аргументы командной строки. 
-                                    # Oтвечают за то, какие задания выполняются
-           path_to_docs:  str,      # Путь к документам. Необходим для 1 задания.
-           analyze_out:   str,      # Путь к выводу документов. Необходим, если выполняется 1 задание отдельно от всех.
-           analyze_in:    str,      # Путь в вводу анализированных документов. Нужен, если выполняется 2 задание отдельно от 1
-           theme_div_out: str,      # Путь к выводу документов, рассортированных по близости темы. Нужен, если выполняется 2 задание
-           theme_div_in:  str,      # Путь к вводу документов с близостью тем. Нужен, если выполняется 3 задание отдельно от 2.
-           final_out:     str       # Путь к финальному выводу. Нужен, если выполняется 3 задание.
+           flags:         int,              # Флаги выполнения. Парсятся через аргументы командной строки. 
+                                            # Oтвечают за то, какие задания выполняются
+           path_to_docs:  str,              # Путь к документам. Необходим для 1 задания.
+           analyze_out:   str,              # Путь к выводу документов. Необходим, если выполняется 1 задание отдельно от всех.
+           analyze_in:    str,              # Путь в вводу анализированных документов. Нужен, если выполняется 2 задание отдельно от 1
+           themes_in:     str,              # Путь к темам. необходим для 2 задания.
+           final_out:     str               # Путь к финальному выводу. Нужен, если выполняется 2 задание.
            ):
     driver_func = lib.driver
-    driver_func.argtypes = [c_uint,
-                            PONITER(POINTER(c_char_p)), c_uint,
-                            PONITER(POINTER(c_char_p)), c_uint,
-                            c_char_p, c_char_p, c_char_p, 
-                            c_char_p, c_char_p, c_char_p] 
+    driver_func.argtypes = [
+        c_uint,
+        PONITER(POINTER(c_char_p)), c_uint,
+        PONITER(POINTER(c_char_p)), c_uint,
+        c_char_p, c_char_p, c_char_p, 
+        c_char_p, c_char_p
+    ] 
     driver_func.restype = c_char_p
     
     ## Никита или андрей, проведите проверку на аргументы
     ## в сответствии с тем, что я выше описал
-    args = [flags,
-            *arrays_to_c(array_docs), *arrays_to_c(array_themes), 
-            *strings_to_c(path_to_docs, analyze_out, analyze_in, theme_div_out, theme_div_in, final_out)
-            ]
+    args = [
+        flags, *arrays_to_c(array_docs), *arrays_to_c(array_themes), 
+        *strings_to_c(path_to_docs, analyze_out, analyze_in, themes_in, final_out)
+    ]
     error = driver_func(*args)
     if not error:
         print("\x1b[91;1m", error, "\x1b[0m")
@@ -103,21 +106,31 @@ def main():
         match sys.argv[index]:
             case "1": flags |= 0b00000001
             case "2": flags |= 0b00000010
-            case "3": flags |= 0b00000100
-            case "0": flags |= 0b00000111
+            case "0": flags |= 0b00000011
             case _: exit()
-        
+    
     if sys.argv[1] in COMMAND_FLAGS.keys():
         flags |= COMMAND_FLAGS[sys.argv[1]]
     elif flags == 0:
         print(f"\x1b[91m INVALID COMMAND {sys.argv[1]}\x1b[0m")
         print_help()
         exit()
+    
+    instr, outstr = "", ""
+    if "-o" in sys.argv:
+        index = sys.argv.index("-o") + 1
+        instr = sys.argv[idnex]
+    if "-i" in sys.argv:
+        index = sys.argv.index("-i") + 1
+        outstr = sys.argv[index]
 
-    print("flags:", flags)
+    if not instr or not outstr:
+        print()
+
+    print("flags:", bool(flags&1), bool(flags&2))
 
     test = [["hello from python", "to C", "and back to python!"]]
-    call_c(*arrays_to_c(test), flags, "", "", "", "", "", "")
+    call_c(*arrays_to_c(test), flags, "", "", "", "", "")
             
 if __name__ == "__main__":
     main()
