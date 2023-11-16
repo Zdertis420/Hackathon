@@ -1,7 +1,7 @@
 from task1 import god_func
 from task2 import god_func2
 
-flag = 2
+flag = 1
 
 if flag == 1:
     god_func()
