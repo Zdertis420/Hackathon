@@ -2,10 +2,9 @@
 
 
 const char* driver (
-	unsigned int flags,
-	char*** docsv, uint32_t docsc,
-	char*** themesv, uint32_t themesc,
-    [[maybe_unused]] char* analyze_out,
+    uint flags,
+    char*** docsv, uint docsc,
+    char*** themesv, uint themesc,
     [[maybe_unused]] char* analyze_in,
     [[maybe_unused]] char* final_out
 ) {
@@ -19,7 +18,7 @@ const char* driver (
 
 		// reading docs
 		if (!docsv || !docsc) return "Для первого задания необходим путь к входным файлам и количество файлов не может быть нулевым.";
-		for (int i = 0; i < docsc; ++i)
+        for (uint i = 0; i < docsc; ++i)
 		{
 			for (char** strarr = docsv[i]; *strarr; ++strarr) // read until nullptr
 			{
@@ -31,7 +30,7 @@ const char* driver (
 
 		//reading themes
 		if (!themesv || !themesc) return "Для первого задания необходим путь и количество файлов не может быть нулевым.";
-		for (int i = 0; i < themesc; ++i)
+        for (uint i = 0; i < themesc; ++i)
 		{
 			for (char** strarr = themesv[i]; *strarr; ++strarr) // same here
 			{
@@ -65,10 +64,10 @@ const char* driver (
     return "";
 }
 
-void print_2d_array(char*** array, size_t size)
+void print_2d_array(char*** array, uint size)
 {
 	std::cout << "tunning test function...\n";
-	for(int i = 0; i < size; ++i)
+    for(uint i = 0; i < size; ++i)
 	{
 		std::cout << "string " << i << std::endl;
 		for(char** p = array[i]; *p; ++p)
@@ -93,8 +92,7 @@ std::pair<std::vector<vec>, axis_order> internal::get_vectors(all_keys_t &all_ke
 		order[j] = *i;
 
     std::vector<vec> ret(maps.size());
-    size_t vec_d = all_keys.size();
-	for(auto i  = 0; i < maps.size(); ++i)
+    for(size_t i  = 0; i < maps.size(); ++i)
 	{
 		for (const auto& key : order)
 			ret[i].push_back(maps[i].at(key));
@@ -117,10 +115,10 @@ void internal::clean_vectors(std::vector<vec> &files, axis_order &ord)
      *  W: tf*idf
      */
 
-    for(int j = 0; j < files.at(0).size(); ++j)
+    for(size_t j = 0; j < files.at(0).size(); ++j)
     {
         uint32_t amount = 0;
-        for (int i = 0; i < files.size(); ++i)
+        for (size_t i = 0; i < files.size(); ++i)
         {
             if (files.at(i).at(j) != 0) ++amount;
         }
@@ -172,11 +170,11 @@ void internal::clean_vectors(std::vector<vec> &files, axis_order &ord)
     for (auto& x : files_new) x.reserve( ord.size() * (1-edge) );
     ord_new.reserve( ord.size() * (1-edge) );
 
-    for (int i = 0; i < ord.size(); ++i) {
+    for (size_t i = 0; i < ord.size(); ++i) {
         if (variances[i] < edge) continue;
 
         ord_new.push_back(ord[i]);
-        for (int j = 0; j < files.size(); ++j)
+        for (size_t j = 0; j < files.size(); ++j)
         {
             files_new[j].push_back(files[j][i]);
         }
@@ -202,13 +200,14 @@ vecd math::normalize(const vec &v)
 #ifdef DEBUG
     assert( std::abs(vector_abs(v) - 1) < 0.0001 );
 #endif
+    return ret;
 }
 
 double math::dot_product(const vec &x, const vec &y)
 {
     double ret = 0;
     assert(x.size() == y.size());
-    for(int i = 0; i < x.size(); ++i)
+    for(size_t i = 0; i < x.size(); ++i)
         ret += (x[i]*y[i]);
     return ret;
 }

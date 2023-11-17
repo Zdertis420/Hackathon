@@ -6,7 +6,7 @@ import ctypes as ct
 from ctypes import POINTER, pointer, cast, c_char_p, c_void_p, c_int, c_uint
 from typing import Tuple
 from random import randint
-# ffom task1 import god_func1 as process_first
+from task1 import god_func as process_first_task
 # from task2 import god_func2 as process_second
 npct = np.ctypeslib
 
@@ -21,7 +21,9 @@ libc = ct.CDLL("libc.so.6") # free(pointer)
 
 
 def perror(*args, **kwargs):
-    print(*args, file = sys.stderr, **kwargs)
+    print("\x1b[1;91m", file=sys.stderr, end='', sep='', flush=False)
+    print(*args, **kwargs, file=sys.stderr, flush=False)
+    print("\x1b[0m", file=sys.stderr, end='', sep='', flush=True)
 
 
 def gen_c_array(l: list[str]):
@@ -85,20 +87,46 @@ def call_c(array_docs:    list[list[str]],  # Массив с документа
         flags, *arrays_to_c(array_docs), *arrays_to_c(array_themes), 
         *strings_to_c(analyze_in, final_out)
     ]
-    error = driver_func(*args)
+    error = str(driver_func(*args))
     if not error:
-        print("\x1b[91;1m", error, "\x1b[0m")
-        exit()
+        perror(error)
+        exit(-1)
+    return 0
 
 
 def print_help():
-    print("PROGRAM USAGE:\nnothing here yet...") # TODO: вывести помощь
+    _help = '''
+    PROGRAM USAGE:
+hack [analyze-docs|analyze-themes|all] -i <input-dir> -o <output-dir>
+    or
+hack --task [0|1|2] -i <input-dir> -o <output-dir>
+input-dir: directory with utf-8 encoded files
+output-dir: directory to which the processed files will be written
+
+based on task, -i and -o may have different meanings as so:
+    --task 1:
+        -i: documents to be processed
+        -o: output with word count
+    --task 2:
+        -i: input with word count
+        -o: output with files divided by themes
+    --task 0:
+        -i: documents to be processed
+        -o: output with files divided by themes
+as you can see, if you run "hack all" or "hack --task 0", intermediate files will not be generated.
+        '''
+    print(_help)
 
 
 def main():
-    if "--help" in sys.argv or len(sys.argv) < 2:
+    if "--help" in sys.argv:
         print_help()
         exit(0)
+    if len(sys.argv) < 2:
+        perror("Invalid arguments")
+        print_help()
+        exit(-1)
+
 
     flags = 0
     if "--task" in sys.argv:
@@ -112,9 +140,9 @@ def main():
     if sys.argv[1] in COMMAND_FLAGS.keys():
         flags |= COMMAND_FLAGS[sys.argv[1]]
     elif flags == 0:
-        print(f"\x1b[91m INVALID COMMAND {sys.argv[1]}\x1b[0m")
+        perror(f"INVALID COMMAND {sys.argv[1]}")
         print_help()
-        exit()
+        exit(-1)
     
     instr, outstr = "", ""
     if "-o" in sys.argv:
@@ -126,9 +154,8 @@ def main():
 
     if not instr or not outstr:
         perror("Input and Output directories can't be empty")
-        exit()
+        exit(-1)
 
-    print("flags:", bool(flags&1), bool(flags&2))
     docsv = [
         [str(i) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],                    # file1
         10*[str(randint(-10, 10)) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],  # file2
@@ -141,13 +168,12 @@ def main():
         ["test1"], 
         ["test2"]
     ]
-    print(*(i[-1] for i in docsv))
     call_c(docsv, themesv, 3, "", "")
-
 
 
 
 
 if __name__ == "__main__":
     main()
+    exit(0)
 

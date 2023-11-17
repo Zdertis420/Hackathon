@@ -2,3 +2,6 @@
 data/
 build/
 compile.sh
+__pycache__/*
+*.spec
+__pycache__/

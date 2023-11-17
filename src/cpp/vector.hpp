@@ -33,6 +33,7 @@ using filemaps = std::vector<filemap>;
 using vec = std::vector<uint32_t>;
 using vecd = std::vector<double>;
 using axis_order = std::vector<std::string>;
+using uint = unsigned int;
 
 enum struct tasks : unsigned int {
 	task1 = 0x01,
@@ -91,7 +92,6 @@ const char* driver (
 	char*** docsv, uint32_t docsc,		// array of documents
 	char*** themesv, uint32_t themesc,	// array of themes
 	//int first_index	// first file name
-	char* analyze_out,	// Same as in python
 	char* analyze_in,	// Same as in python
     char* final_out		// Same as in python
 );
