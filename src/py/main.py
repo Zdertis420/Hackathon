@@ -6,8 +6,7 @@ import ctypes as ct
 from ctypes import POINTER, pointer, cast, c_char_p, c_void_p, c_int, c_uint
 from typing import Tuple
 from random import randint
-from task1 import god_func as process_first_task
-# from task2 import god_func2 as process_second
+from process import god_func as process_first_task
 npct = np.ctypeslib
 
 
@@ -169,24 +168,31 @@ def main():
         perror("For the second task, themes directory must be present")
         sys.exit(-1)
 
-    ## АНДРЕЙ, ВОТ ТЕБЕ ПРИМЕР ПЕРЕДАЧИ ДАННЫХ
-    ## СДЕЛАЙ ПРОВЕРКУ НА ФЛАГИ И АРГУМЕНТЫ
-    ## СДЕЛАЙ, ЧТОБЫ ФУНКЦИЯ CALL_C ВЫЗЫВАЛАСЬ ТОЛЬКО ДЛЯ 2 ЗАДАНИЯ
-    docsv = [
-        [str(i) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],                    # file1
-        10*[str(randint(-10, 10)) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],  # file2
-        ["test", "lmao", "kill me"] + ["THIS STRING IS EVERYWHERE"],                    # file3
-        ["empty", "aaa"] + ["THIS STRING IS EVERYWHERE"],                               # file4
-	["empty", "empty", "kill me"] + ["THIS STRING IS EVERYWHERE"],			# ...
-        2*[str(i**2) for i in range(100)] + ["THIS STRING IS EVERYWHERE"]
-    ];
-    themesv =  [
-        ["test1"], 
-        ["test2"]
-    ]
-    call_c(docsv, themesv, flags, instr, outstr)
+#    docsv = [
+#        [str(i) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],                    # file1
+#        10*[str(randint(-10, 10)) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],  # file2
+#        ["test", "lmao", "kill me"] + ["THIS STRING IS EVERYWHERE"],                    # file3
+#        ["empty", "aaa"] + ["THIS STRING IS EVERYWHERE"],                               # file4
+#	["empty", "empty", "kill me"] + ["THIS STRING IS EVERYWHERE"],			# ...
+#        2*[str(i**2) for i in range(100)] + ["THIS STRING IS EVERYWHERE"]
+#    ];
+#    themesv =  [
+#        ["test1"],
+#        ["test2"]
+#    ]
 
-
+    switch flags:
+	case 1:
+	    process_first_task(in_path=instr, out_path=outstr, flag=1)
+	    # sys.exit(0) это сделает блок if __name__ == "__main__"
+	case 2:
+	    call_c([[]], [[]], 2, instr, themestr outstr)
+	    # sys.exit(0) это сделает блок if __name__ == "__main__"
+	case 3:
+	    docsv = process_first_task(in_path=instr, out_path='', flag=3)
+	    themesv = process_first_task(in_path=themestr, out_path='', flag=3)
+	    call_c(docsv, themesv, flags, instr, '', outstr)
+	    # sys.exit(0) это сделает блок if __name__ == "__main__"
 
 
 if __name__ == "__main__":
