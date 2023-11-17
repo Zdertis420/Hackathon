@@ -200,4 +200,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    print("\x1b[1;92mSuccess!\x1b[0m\nDone")
     sys.exit(0)
