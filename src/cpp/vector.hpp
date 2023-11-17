@@ -34,11 +34,7 @@ using vec = std::vector<uint32_t>;
 using vecd = std::vector<double>;
 using axis_order = std::vector<std::string>;
 using uint = unsigned int;
-
-enum struct tasks : unsigned int {
-	task1 = 0x01,
-	task2 = 0x02,
-};
+using fs = std::filesystem;
 
 namespace internal {
 

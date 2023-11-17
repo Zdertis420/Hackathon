@@ -87,7 +87,7 @@ def god_func(**kwargs):
         create_dir(answer_list, files_name, out_path)
 
     if flag == 2:
-        return docs
+        return list(docs)
 
     if flag == 0:
         return docs
