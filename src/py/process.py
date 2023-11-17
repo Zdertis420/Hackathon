@@ -7,18 +7,11 @@ import pymorphy3
 def get_files(path):
     files = [f for f in os.listdir(f"{path}")]
     docs = []
-
     for file in files:
-#        if not os.path.isfile(file):
-#            print("not a file")
-#            continue
-        try:
-            with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
-                f = [value.strip().upper() for value in f.readlines() if value != "\n"]
-                docs.append(f)
-        except:
-            continue
-
+        if not os.path.isfile(f'{path}/{file}'): continue
+        with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
+            f = [value.strip().upper() for value in f.readlines() if value != "\n"]
+            docs.append(f)
     return docs, files, path
 
 
@@ -45,7 +38,8 @@ def get_infinitive(doc):
 
 
 def del_stopwords(doc):
-    with open("stopwords-ru.txt", mode='r', encoding='utf-8') as f:
+    tmp_folder = os.path.dirname(__file__)  # ! НЕ УДАЛЯТЬ, СЛОМАЕТЕ
+    with open(os.path.join(tmp_folder, "stopwords-ru.txt"), mode='r', encoding='utf-8') as f:
         stopwords = list(map(lambda s: s.rstrip(), f.readlines()))
 
     only_words = []
@@ -67,10 +61,21 @@ def get_answer(doc):
     return words_dict
 
 
+def new_name_dir(path):
+    if not os.path.exists(f'{path}/output'): return ''
+    counter = 2
+    while True:
+        if os.path.exists(f'{path}/output{counter}'):
+            counter += 1
+            continue
+        return counter
+
+
 def create_dir(docs, files_name, path):
-    os.mkdir(f'{path}/output')
+    counter = new_name_dir(path)
+    os.mkdir(f'{path}/output{counter}')
     for doc in range(len(docs)):
-        with open(f"{path}/output/{files_name[doc]}", mode='w', encoding='utf-8') as f:
+        with open(f"{path}/output{counter}/{files_name[doc]}", mode='w', encoding='utf-8') as f:
             for line in docs[doc]:
                 f.write(f'{line[0]}\t{line[1]}\n')
 
