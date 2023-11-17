@@ -95,11 +95,14 @@ def call_c(array_docs:    list[list[str]],  # Массив с документа
 
 
 def print_help():
-    _help = '''
+    __help__ = '''
     PROGRAM USAGE:
-hack [analyze-docs|analyze-themes|all] -i <input-dir> -o <output-dir>
+hack [analyze-docs|analyze-themes|all] -i <input-dir> -o <output-dir> [-t <theme-dir>]
     or
-hack --task [0|1|2] -i <input-dir> -o <output-dir>
+hack --task [0|1|2] -i <input-dir> -o <output-dir> [-t <themes>]
+Flag order is not strict.
+Exception: [analyze-docs|analyze-themes|all] must be first argument if present
+
 input-dir: directory with utf-8 encoded files
 output-dir: directory to which the processed files will be written
 
@@ -114,8 +117,10 @@ based on task, -i and -o may have different meanings as so:
         -i: documents to be processed
         -o: output with files divided by themes
 as you can see, if you run "hack all" or "hack --task 0", intermediate files will not be generated.
+
+-t: only needed with --task 1. path to themes folder
         '''
-    print(_help)
+    print(__help__)
 
 
 def main():
@@ -144,18 +149,28 @@ def main():
         print_help()
         sys.exit(-1)
     
-    instr, outstr = "", ""
+    instr, outstr, themestr = "", "" ,""
     if "-o" in sys.argv:
         index = sys.argv.index("-o") + 1
         outstr = sys.argv[index]
     if "-i" in sys.argv:
         index = sys.argv.index("-i") + 1
         instr = sys.argv[index]
+    if "-t" in sys.argv:
+        index = sys.argv.index("-t") + 1
+        themestr = sys.argv[index]
+
 
     if not instr or not outstr:
         perror("Input and Output directories can't be empty")
         sys.exit(-1)
+    if not themestr and ((flags & 0x02) == 0):
+        perror("For the second task, themes directory must be present")
+        sys.exit(-1)
 
+    ## АНДРЕЙ, ВОТ ТЕБЕ ПРИМЕР ПЕРЕДАЧИ ДАННЫХ
+    ## СДЕЛАЙ ПРОВЕРКУ НА ФЛАГИ И АРГУМЕНТЫ
+    ## СДЕЛАЙ, ЧТОБЫ ФУНКЦИЯ CALL_C ВЫЗЫВАЛАСЬ ТОЛЬКО ДЛЯ 2 ЗАДАНИЯ
     docsv = [
         [str(i) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],                    # file1
         10*[str(randint(-10, 10)) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],  # file2
@@ -168,7 +183,7 @@ def main():
         ["test1"], 
         ["test2"]
     ]
-    call_c(docsv, themesv, 3, "", "")
+    call_c(docsv, themesv, flags, instr, outstr)
 
 
 
