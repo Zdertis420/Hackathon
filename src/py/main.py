@@ -8,6 +8,7 @@ from typing import Tuple
 from random import randint
 from process import god_func as process_first_task
 
+
 npct = np.ctypeslib
 
 SHARED_LIBRARY_PATH = '/home/main/coding/Hackaton/build'
@@ -166,7 +167,7 @@ def main():
     if not instr or not outstr:
         perror("Input and Output directories can't be empty")
         sys.exit(-1)
-    if not themestr and ((flags & 0x02) == 0):
+    if not themestr and ((flags & 0x02) == 1):
         perror("For the second task, themes directory must be present")
         sys.exit(-1)
 

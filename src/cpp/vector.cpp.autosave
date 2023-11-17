@@ -118,8 +118,8 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
      *
      *  W: tf*idf
      */
-
-
+    
+    for (  )
 
     std::vector<vecd> ret(files.size());
     for(auto& x : ret) {
