@@ -1,19 +1,23 @@
 import os
 import re
 import pymorphy3
-import time
-
-start_time = time.time()
-
+# import gc
+# gc.disabled()
 
 def get_files(path):
     files = [f for f in os.listdir(f"{path}")]
     docs = []
 
     for file in files:
-        with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
-            f = [value.strip().upper() for value in f.readlines() if value != "\n"]
-            docs.append(f)
+#        if not os.path.isfile(file):
+#            print("not a file")
+#            continue
+        try:
+            with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
+                f = [value.strip().upper() for value in f.readlines() if value != "\n"]
+                docs.append(f)
+        except:
+            continue
 
     return docs, files, path
 
@@ -86,11 +90,5 @@ def god_func(**kwargs):
         answer_list = list(map(get_answer, docs))
         create_dir(answer_list, files_name, out_path)
 
-    if flag == 2:
+    if flag == 3:
         return list(docs)
-
-    if flag == 0:
-        return docs
-
-    print("--- %s seconds ---" % (time.time() - start_time))
-    return list(docs)
