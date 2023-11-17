@@ -181,18 +181,18 @@ def main():
 #        ["test2"]
 #    ]
 
-    switch flags:
+    match flags:
 	case 1:
-	    process_first_task(in_path=instr, out_path=outstr, flag=1)
-	    # sys.exit(0) это сделает блок if __name__ == "__main__"
-	case 2:
-	    call_c([[]], [[]], 2, instr, themestr outstr)
-	    # sys.exit(0) это сделает блок if __name__ == "__main__"
-	case 3:
-	    docsv = process_first_task(in_path=instr, out_path='', flag=3)
-	    themesv = process_first_task(in_path=themestr, out_path='', flag=3)
-	    call_c(docsv, themesv, flags, instr, '', outstr)
-	    # sys.exit(0) это сделает блок if __name__ == "__main__"
+        process_first_task(in_path=instr, out_path=outstr, flag=1)
+        # sys.exit(0) это сделает блок if __name__ == "__main__"
+    case 2:
+        call_c([[]], [[]], 2, instr, themestr outstr)
+        # sys.exit(0) это сделает блок if __name__ == "__main__"
+    case 3:
+        docsv = process_first_task(in_path=instr, out_path='', flag=3)
+        themesv = process_first_task(in_path=themestr, out_path='', flag=3)
+        call_c(docsv, themesv, flags, instr, '', outstr)
+        # sys.exit(0) это сделает блок if __name__ == "__main__"
 
 
 if __name__ == "__main__":
