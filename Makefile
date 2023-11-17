@@ -32,16 +32,10 @@ $(OBJDIR)/libvector.so: vector.cpp vector.hpp
 	mkdir -p $(OBJDIR)
 	g++ $(CXXFLAGS) -o "$@" $<
 
-$(OBJDIR)/app/hack: $(PYSRCDIR)/main.py $(PYSRCDIR)/task1.py install
+$(OBJDIR)/app/hack: main.py $(PYSRCDIR)/process.py install
 	echo building python
-	$(PYINSTALLER) --noconfirm --onefile --name hack --console --distpath=build/app --add-data="$(PYSRCDIR)/task1.py:build" --add-data="$(PYSRCDIR)/stopwords-ru.txt:build" --hidden-import=pymorphy3 $(PYSRCDIR)/main.py
+	$(PYINSTALLER) --noconfirm --onefile --name hack --console --distpath=build/app --add-data="$(PYSRCDIR)/process.py:." --add-data="$(PYSRCDIR)/stopwords-ru.txt:." --hidden-import=pymorphy3 $(PYSRCDIR)/main.py
 	cp $(OBJDIR)/libvector.so $(OBJDIR)/app
-#
-#	echo "#!/home/main/coding/py/venv/bin/python3" > $@
-#	cat $< >> $@
-#	cp $(PYSRCDIR)/task1.py $(OBJDIR)
-#	cp $(PYSRCDIR)/stopwords-ru.txt $(OBJDIR)
-#	chmod +x $@
 
 $(OBJDIR)/hack-ui: src/ui/*
 	echo building UI
