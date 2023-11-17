@@ -9,9 +9,15 @@ def get_files(path):
     docs = []
 
     for file in files:
-        with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
-            f = [value.strip().upper() for value in f.readlines() if value != "\n"]
-            docs.append(f)
+#        if not os.path.isfile(file):
+#            print("not a file")
+#            continue
+        try:
+            with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
+                f = [value.strip().upper() for value in f.readlines() if value != "\n"]
+                docs.append(f)
+        except:
+            continue
 
     return docs, files, path
 
@@ -39,7 +45,7 @@ def get_infinitive(doc):
 
 
 def del_stopwords(doc):
-    with open("./stopwords-ru.txt", mode='r', encoding='utf-8') as f:
+    with open("stopwords-ru.txt", mode='r', encoding='utf-8') as f:
         stopwords = list(map(lambda s: s.rstrip(), f.readlines()))
 
     only_words = []

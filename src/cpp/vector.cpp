@@ -14,8 +14,8 @@ const char* driver (
     filemaps files;
     filemaps themes;
     all_keys_t all_keys;
-    std::vector<vec> files_parsed;   // is set differently based on task flags
-    std::vector<vec> themes_parsed;  // is set differently based on task flags
+//    std::vector<vec> files_parsed;   // is set differently based on task flags
+//    std::vector<vec> themes_parsed;  // is set differently based on task flags
 
     if (flags == 0xb11)
     {
@@ -51,14 +51,15 @@ const char* driver (
         if (!analyze_in) return "При выполнении второго задания отдельно от первого, необходимо предоставить путь до проанализированных файлов";
         const fs::path inpath{analyze_in};
         size_t n_elem = 0;
-        for (const auto& entry: fs::directory_iterator{inpath})
-        {
-            if (entry->is_character_file()) ++n_elem;
-        }
+//        for (const auto& entry: fs::directory_iterator{inpath})
+//        {
+//            if (entry->is_character_file()) ++n_elem;
+//        }
+        std::cout << n_elem;
     }
     dbg::print_map(files[1]);
     dbg::print_map(themes[0]);
-    normalize_keys(all_keys, files, themes);
+    internal::normalize_keys(all_keys, files, themes);
     auto [files_parsed, themes_parsed, order] = internal::get_vectors(all_keys, files, themes);
 
     // auto x = internal::get_word_costs(files_parsed, order);
@@ -121,8 +122,10 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
 
     std::vector<vecd> ret(files.size());
     for(auto& x : ret) {
-        x = vecd()
+        x = vecd(); // TODO ДОПИСАТЬ
     }
+
+    return ret;
 
 }
 

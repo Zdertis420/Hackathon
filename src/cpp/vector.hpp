@@ -35,7 +35,7 @@ using vec = std::vector<uint32_t>;
 using vecd = std::vector<double>;
 using axis_order = std::vector<std::string>;
 using uint = unsigned int;
-using fs = std::filesystem;
+namespace fs = std::filesystem;
 
 
 namespace internal {
@@ -55,12 +55,12 @@ namespace internal {
     ) {
         for(const auto& key : set)
         {
-            for(auto m1 = maps1.begin(),  m2 = maps.begin();
+            for(auto m1  = maps1.begin(), m2  = maps2.begin();
                      m1 != maps1.end() && m2 != maps2.end();
                      m1++,                m2++ )
             {
-                m1.insert({key, 0});
-                m2.insert({key, 0});
+                m1->insert({key, 0});
+                m2->insert({key, 0});
             }
         }
     }
