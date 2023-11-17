@@ -6,9 +6,11 @@
 * g++ в $PATH (чтобы использовать clang++, установите переменную CXX в Makefile)
 * интернет для скачивания пакетов с pip
 ## Linux:
-```git clone https://github.com/Zdertis420/Hackathon
+```sh
+git clone https://github.com/Zdertis420/Hackathon
 cd Hackathon
-make```
+make
+```
 путь для приложения после сборки: $\(OBJDIR\)/app/hack
 по умолчанию $\(OBJDIR\) = ./build
 ### Для установки Виртаульной среды в кастомную директорию:
