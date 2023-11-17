@@ -2,62 +2,65 @@
 
 
 const char* driver (
-    uint flags,
-    char*** docsv, uint docsc,
+    [[maybe_unused]] uint flags,
+    [[maybe_unused]] uint first_filename,
+    char*** docsv,   uint docsc,
     char*** themesv, uint themesc,
+    [[maybe_unused]] char* themes_in,
     [[maybe_unused]] char* analyze_in,
     [[maybe_unused]] char* final_out
 ) {
 
-	auto files = filemaps(docsc);
-	auto themes = filemaps(themesc);
+    filemaps files;
+    filemaps themes;
     all_keys_t all_keys;
     std::vector<vec> files_parsed; //is set differently based on task flags
 
-    // reading docs
-    if (!docsv || !docsc) return "Для первого задания необходим путь к входным файлам и количество файлов не может быть нулевым.";
-    for (uint i = 0; i < docsc; ++i)
+    if (flags == 0xb11)
     {
-        for (char** strarr = docsv[i]; *strarr; ++strarr) // read until nullptr
+        files = filemaps(docsc);
+        themes = filemaps(themesc);
+
+        // reading docs
+        if (!docsv || !docsc) return "Для первого задания необходим путь к входным файлам и количество файлов не может быть нулевым.";
+        for (uint i = 0; i < docsc; ++i)
         {
-            auto key = std::string_view(*strarr);
-            ++files[i][key];
-            all_keys.insert(key);
+            for (char** strarr = docsv[i]; *strarr; ++strarr) // read until nullptr
+            {
+                auto key = std::string_view(*strarr);
+                ++files[i][key];
+                all_keys.insert(key);
+            }
+        }
+
+        //reading themes
+        if (!themesv || !themesc) return "Для первого задания необходим путь и количество файлов не может быть нулевым.";
+        for (uint i = 0; i < themesc; ++i)
+        {
+            for (char** strarr = themesv[i]; *strarr; ++strarr) // same here
+            {
+                auto key = std::string_view(*strarr);
+                ++themes[i][key];
+                all_keys.insert(key);
+            }
         }
     }
-
-    //reading themes
-    if (!themesv || !themesc) return "Для первого задания необходим путь и количество файлов не может быть нулевым.";
-    for (uint i = 0; i < themesc; ++i)
+    if (flags == 0b10)
     {
-        for (char** strarr = themesv[i]; *strarr; ++strarr) // same here
+        if (!analyze_in) return "При выполнении второго задания отдельно от первого, необходимо предоставить путь до проанализированных файлов";
+        const fs::path inpath{analyze_in};
+        size_t n_elem = 0;
+        for (const auto& entry: fs::directory_iterator{inpath})
         {
-            auto key = std::string_view(*strarr);
-            ++themes[i][key];
-            all_keys.insert(key);
+            if (entry->is_character_file()) ++n_elem;
         }
     }
     dbg::print_map(files[1]);
     dbg::print_map(themes[0]);
-    std::cout.flush();
 
     auto [files_parsed, order] = internal::get_vectors(all_keys, files);
 
     internal::clean_vectors(files_parsed, order);
-
-
-// SANITY_CHECK (
-//     for (int i = 0; i < order.size(); ++i)
-//           std::cout << order[i] << " : " << files_parsed[1][i] << std::endl;
-// )
-
-
-    if ( flags & static_cast<unsigned int>(tasks::task2) ) {
-		// прочитать из файла сразу в вектора
-		// посчитать по формуле сходство
-        // посчитать близость к темам
-		// вывести в файлы
-	}
 
     return "";
 }

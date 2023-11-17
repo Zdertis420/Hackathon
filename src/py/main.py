@@ -67,16 +67,17 @@ def test_c():
     test_f(*arrays_to_c(test_arr))
 
 
-def call_c(array_docs:    list[list[str]],  # Массив с документами 
-           array_themes:  list[list[str]],  # Массив с темами
-           flags:         int,              # Флаги выполнения. Парсятся через аргументы командной строки. 
-                                            # Oтвечают за то, какие задания выполняются
-           analyze_in:    str,              # Путь в вводу анализированных документов. Нужен, если выполняется 2 задание отдельно от 1
-           final_out:     str               # Путь к финальному выводу. Нужен, если выполняется 2 задание.
+def call_c(array_docs:    list[list[str]],  # Массив с документами
+	   array_themes:  list[list[str]],  # Массив с темами
+	   flags:         int,              # Флаги выполнения. Парсятся через аргументы командной строки.
+	   analyze_in:    str,              # Путь в вводу анализированных документов. Нужен, если выполняется 2 задание отдельно от 1\
+	   themes_in:	  str,		    # Путь к темам
+	   final_out:     str               # Путь к финальному выводу. Нужен, если выполняется 2 задание.
            ):
     driver_func = lib.driver
     driver_func.argtypes = [
         c_uint,
+	c_uint,
         POINTER(POINTER(c_char_p)), c_uint,
         POINTER(POINTER(c_char_p)), c_uint,
         c_char_p, c_char_p, 
@@ -176,7 +177,7 @@ def main():
         10*[str(randint(-10, 10)) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],  # file2
         ["test", "lmao", "kill me"] + ["THIS STRING IS EVERYWHERE"],                    # file3
         ["empty", "aaa"] + ["THIS STRING IS EVERYWHERE"],                               # file4
-        ["empty", "empty", "kill me"] + ["THIS STRING IS EVERYWHERE"],                  # ...
+	["empty", "empty", "kill me"] + ["THIS STRING IS EVERYWHERE"],			# ...
         2*[str(i**2) for i in range(100)] + ["THIS STRING IS EVERYWHERE"]
     ];
     themesv =  [
