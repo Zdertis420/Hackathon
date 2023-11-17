@@ -1,3 +1,4 @@
 pymorphy3
 numpy
 pyinstaller
+PyQt6
