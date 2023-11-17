@@ -192,9 +192,9 @@ def main():
             call_c([[]], [[]], 2, instr, themestr, outstr)
             # sys.exit(0) это сделает блок if __name__ == "__main__"
         case 3:
-            docsv = process_first_task(in_path=instr, out_path='', flag=3)
-            themesv = process_first_task(in_path=themestr, out_path='', flag=3)
-            call_c(docsv, themesv, flags, instr, '', outstr)
+            docsv, first_docname = process_first_task(in_path=instr, out_path='', flag=3)
+            themesv, fitst themev = process_first_task(in_path=themestr, out_path='', flag=3)
+            call_c(docsv, themesv, flags, instr,<F4> '', outstr)
             # sys.exit(0) это сделает блок if __name__ == "__main__"
 
 

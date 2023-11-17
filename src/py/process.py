@@ -5,6 +5,9 @@ import pymorphy3
 # gc.disabled()
 
 def get_files(path):
+
+    ## сделай так, чтобы она искала в цикле имя файла, которое наименьшее число
+
     files = [f for f in os.listdir(f"{path}")]
     docs = []
     for file in files:
@@ -84,6 +87,8 @@ def god_func(**kwargs):
     in_path = kwargs["in_path"]
     out_path = kwargs["out_path"]
     flag = kwargs["flag"]
+
+    ## эта функция вернёт номер первого файла в добавок
 
     docs, files_name, path_docs = get_files(in_path)
     docs = map(clean_files, docs)
