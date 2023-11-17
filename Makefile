@@ -3,11 +3,12 @@ VENV ?= venv
 PYINSTALLER := $(VENV)/bin/pyinstaller
 PIP := $(VENV)/bin/pip
 CXX ?= g++
-PYSRCDIR = src/py
-CXXSRCDIR = src/cpp
-OBJDIR = build
-VPATH = $(OBJDIR):$(OBJDIR)/app:$(PYSRCDIR):$(CXXSRCDIR)
-CXXFLAGS = -std=c++20 -O2 -shared -fPIC -Wall -Wextra -Werror
+PYSRCDIR := src/py
+CXXSRCDIR := src/cpp
+UISRCDIR := src/ui
+OBJDIR := build
+VPATH := $(OBJDIR):$(OBJDIR)/app:$(PYSRCDIR):$(CXXSRCDIR):$(UISRCDIR)
+CXXFLAGS := -std=c++20 -O2 -shared -fPIC -Wall -Wextra -Werror
 
 .PHONY: clean all remake run install
 
@@ -19,51 +20,50 @@ endif
 
 
 all: Makefile $(OBJDIR)/libvector.so $(OBJDIR)/app/hack $(OBJDIR)/app/hack-ui
-	echo Make all
+	@echo MAKING ALL
 	mkdir -p $(OBJDIR)
 
-
 venv: 
+	@echo MAKING VIRTUAL ENVIRONMENT
 	python3 -m venv $(VENV)
 
 install: venv
+	@echo INSTALLING DEPENDENCIES
 	$(PIP) install -r requirements.txt
 
-
 $(OBJDIR)/libvector.so: vector.cpp vector.hpp
-	echo building libvector.so
-	mkdir -p $(OBJDIR)
+	@echo BUILDING libvector.so
 	g++ $(CXXFLAGS) -o "$@" $<
 
-
 $(OBJDIR)/app/hack: main.py process.py stopwords-ru.txt | install
-	echo building python
+	@echo BUILING CONSOLE APPLICATION
 	$(PYINSTALLER) --noconfirm --onefile --name hack --console 	\
 		--distpath=build/app 					\
 		--add-data="$(PYSRCDIR)/process.py:." 	 		\
 		--add-data="src/py/stopwords-ru.txt:." 			\
 		--hidden-import=pymorphy3 				\
 		$(PYSRCDIR)/main.py
-	\
 	cp $(OBJDIR)/libvector.so $(OBJDIR)/app
 	cp $(PYSRCDIR)/stopwords-ru.txt $(OBJDIR)/app
 
-
-$(OBJDIR)/hack-ui: src/ui/*
-	echo building UI
-
+$(OBJDIR)/app/hack-ui: $(UISRCDIR)/ui.py | install
+	@echo BUILDING UI
+	$(PYINSTALLER) --noconfirm --onefile --name hack-ui	\
+		--distpath=build/app			  	\
+		--hidden-import=PyQt5				\
+		$(UISRCDIR)/ui.py
 
 remake:
+	@echo REMAKING
 	make clean
 	make all
 
-
 run: all
-	$(OBJDIR)/app/hack --task 0 -i 00 -o -
-
+	@echo RUNNING
+	$(OBJDIR)/app/hack --task 0 -i data/docs/utf8 -o data/output -t data/themes/utf8
 
 clean:
-	echo cleaning build
+	@echo CLEANING BUILD
 	$(RM) -rf $(OBJDIR)
 	$(RM) -rf $(VENV)
 
