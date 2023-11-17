@@ -11,7 +11,7 @@ from process import god_func as process_first_task
 
 npct = np.ctypeslib
 
-SHARED_LIBRARY_PATH = '/home/main/coding/Hackaton/build'
+SHARED_LIBRARY_PATH = '/home/main/coding/Hackathon/build'
 SHARED_LIBRARY_NAME = 'libvector.so'
 COMMAND_FLAGS = {"analyze-docs": 0b00000001,
                  "analyze-themes": 0b00000010,
