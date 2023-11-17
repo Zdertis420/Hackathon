@@ -90,7 +90,7 @@ def call_c(array_docs:    list[list[str]],  # Массив с документа
     error = str(driver_func(*args))
     if not error:
         perror(error)
-        exit(-1)
+        sys.exit(-1)
     return 0
 
 
@@ -121,11 +121,11 @@ as you can see, if you run "hack all" or "hack --task 0", intermediate files wil
 def main():
     if "--help" in sys.argv:
         print_help()
-        exit(0)
+        sys.exit(0)
     if len(sys.argv) < 2:
         perror("Invalid arguments")
         print_help()
-        exit(-1)
+        sys.exit(-1)
 
 
     flags = 0
@@ -135,14 +135,14 @@ def main():
             case "1": flags |= 0b00000001
             case "2": flags |= 0b00000010
             case "0": flags |= 0b00000011
-            case _: exit()
+            case _: sys.exit()
     
     if sys.argv[1] in COMMAND_FLAGS.keys():
         flags |= COMMAND_FLAGS[sys.argv[1]]
     elif flags == 0:
         perror(f"INVALID COMMAND {sys.argv[1]}")
         print_help()
-        exit(-1)
+        sys.exit(-1)
     
     instr, outstr = "", ""
     if "-o" in sys.argv:
@@ -154,7 +154,7 @@ def main():
 
     if not instr or not outstr:
         perror("Input and Output directories can't be empty")
-        exit(-1)
+        sys.exit(-1)
 
     docsv = [
         [str(i) for i in range(10)] + ["THIS STRING IS EVERYWHERE"],                    # file1
@@ -175,5 +175,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-    exit(0)
+    sys.exit(0)
 

@@ -34,7 +34,7 @@ $(OBJDIR)/libvector.so: vector.cpp vector.hpp
 
 $(OBJDIR)/app/hack: $(PYSRCDIR)/main.py $(PYSRCDIR)/task1.py install
 	echo building python
-	$(PYINSTALLER) --noconfirm --onefile --console --distpath=build/app --add-data="$(PYSRCDIR)/task1.py:build" --add-data="$(PYSRCDIR)/stopwords-ru.txt:build" --hidden-import=pymorphy3 $(PYSRCDIR)/main.py
+	$(PYINSTALLER) --noconfirm --onefile --name hack --console --distpath=build/app --add-data="$(PYSRCDIR)/task1.py:build" --add-data="$(PYSRCDIR)/stopwords-ru.txt:build" --hidden-import=pymorphy3 $(PYSRCDIR)/main.py
 	cp $(OBJDIR)/libvector.so $(OBJDIR)/app
 #
 #	echo "#!/home/main/coding/py/venv/bin/python3" > $@
@@ -51,9 +51,10 @@ remake:
 	make all
 
 run: all
-	build/hack --task 0 -i 00 -o -
+	$(OBJDIR)/app/hack --task 0 -i 00 -o -
 
 clean:
 	echo cleaning build
 	$(RM) -rf $(OBJDIR)
+	$(RM) -rf $(VENV)
 
