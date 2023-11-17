@@ -1,6 +1,8 @@
 import os
 import re
 import pymorphy3
+# import gc
+# gc.disabled()
 
 def get_files(path):
     files = [f for f in os.listdir(f"{path}")]
