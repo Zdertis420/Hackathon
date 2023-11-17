@@ -1,6 +1,8 @@
 # import gc
 # gc.disable()
 
+import os
+
 import sys
 
 from PyQt6.QtWidgets import (QWidget,
@@ -15,6 +17,8 @@ from PyQt6.QtWidgets import (QWidget,
 class MainWin(QWidget):
     def __init__(self):
         super().__init__()
+
+        self.heck = 'hack'
 
         self.setup()
 
@@ -39,6 +43,7 @@ class MainWin(QWidget):
     def browseTextsPath(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
+        dialog.setDirectory(r'')
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
@@ -48,6 +53,7 @@ class MainWin(QWidget):
     def browseTopicsPath(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
+        dialog.setDirectory(r'')
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
@@ -57,6 +63,7 @@ class MainWin(QWidget):
     def browseOutputsPath(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
+        dialog.setDirectory(r'')
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
@@ -67,6 +74,17 @@ class MainWin(QWidget):
         print(self.getTextsPath(),
               self.getTopicsPath(),
               self.getOutputPath())
+
+        if self.first.checkState():
+            os.system(f'{self.heck} --task 1 -i {self.getTextsPath()} -o {self.getOutputPath()}')
+        elif self.second.checkState():
+            os.system(
+                f'{self.heck} --task 2 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}')
+        elif self.first.stateChanged() and self.second.stateChanged():
+            os.system(
+                f'{self.heck} --task 0 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}')
+        else:
+            self.response.setText('Invalid input: You should choose at least one task!')
 
     def setup(self):
         self.setGeometry(300, 300, 800, 400)
