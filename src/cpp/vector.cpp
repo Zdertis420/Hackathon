@@ -33,10 +33,7 @@ const char* driver (
         internal::read_from_files(themes_in, themes, all_keys);
 
     }
-    //dbg::print_map(files[0]);
-    //SFD;
-    //dbg::print_map(themes[0]);
-    std::cerr << files.at(0).size() << std::endl;
+
     internal::normalize_keys(all_keys, files, themes);
     auto [files_parsed, themes_parsed, order] = internal::get_vectors(all_keys, files, themes);
 
@@ -124,9 +121,6 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
         }
         if (std::abs(idf) > 0.0001)
             idf = std::log(amount_of_files/idf); //applyintg the formula
-//        SANITY_CHECK (
-//            std::printf("index: %lu; value: %lf\n", i, idf);
-//        )
         idfs[i] = idf;
     }
 
@@ -144,25 +138,13 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
             ret.at(file).at(word) =
                 idfs[word] * ( static_cast<double>( files.at(file).at(word) )
                              / static_cast<double>( amounts.at(file)) );
-            SANITY_CHECK(
-                //SFD;
-//                std::cerr << ret[file][word]  << ' ' << files[file][word] << ' ' << idfs[word] << ' ' << amounts[file] << ' ';
-//                std::printf("return: %lf | files amount: %i | idf: %lf | amount: %i\n",
-//                            ret[file][word],
-//                            files[file][word],
-//                            idfs[word],
-//                            amounts[file] );
-            )
         }
     }
-
     return ret;
 }
 
 void internal::read_from_chars(char ***what, uint how_much, filemaps &where, all_keys_t &all_keys)
 {
-    // вынести вверх
-    //if (!docsv || !docsc) return "Для первого задания необходим путь к входным файлам и количество файлов не может быть нулевым.";
     for (uint i = 0; i < how_much; ++i)
     {
         for (char** strarr = what[i]; *strarr; ++strarr) // read until nullptr
@@ -179,7 +161,6 @@ void internal::read_from_files(char *foldername, filemaps &where, all_keys_t &al
     fs::path path{foldername};
     for (const auto & entry: fs::directory_iterator{path})
     {
-        std::cout << where.size() << std::endl;
         if (entry.is_directory()) continue;
         std::ifstream current_file(entry.path());
         if (!current_file.is_open())
@@ -217,9 +198,6 @@ std::vector<vecd> internal::compare_themes(
         for (size_t j = 0; j < nthemes; ++j)
         {
             ret[i][j] = math::angle_cos(costsd[i], costst[j]);
-//            SANITY_CHECK(
-//                std::cerr << ret[i][j] << ' ';
-//            )
         }
     }
     return ret;
@@ -243,16 +221,18 @@ void internal::output_data(
     }
     for (size_t i = 0; i < docs_themes.size(); ++i)
     {
-//        SANITY_CHECK(
-//            for(const auto& x : docs_themes[i]) std::cerr << x << std::endl;
-//        )
+        SANITY_CHECK(
+            std::cerr << "INDEX " << i << '\n';
+            for (const auto& x : docs_themes[i])
+                std::cerr << x << ' ';
+            std::cerr << '\n';
+        )
+
+        double min_value = 1000000;
         size_t min_index = 0;
-        size_t index = 0;
-        for (double min_value = 1.000001; //since cosine can't be greater than 1
-             index < docs_themes[i].size();
-             ++index)
+        for (size_t index = 0; index < docs_themes[i].size(); ++index)
         {
-            if (min_value <= docs_themes.at(i).at(index))
+            if (min_value >= docs_themes.at(i).at(index))
             {
                 min_value = docs_themes.at(i).at(index);
                 min_index = index;

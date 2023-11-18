@@ -4,7 +4,7 @@ import pymorphy3
 import gc
 # gc.disable()
 
-def get_files(path, хуй):
+def get_files(path, var):
     files = [f for f in os.listdir(path)]
     docs = []
     for file in files:
@@ -13,9 +13,12 @@ def get_files(path, хуй):
         with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
             f = [value.strip().upper() for value in f.readlines() if value != "\n"]
             docs.append(f)
-        if int(file) < хуй:
-            хуй = int(file)
-    return docs, files, path, хуй
+        try:
+            var = min(var, int(file))
+        except:
+            continue
+
+    return docs, files, path, var
 
 
 def clean_files(doc):
@@ -90,10 +93,8 @@ def god_func(**kwargs):
 
     ## эта функция вернёт номер первого файла в добавок
 
-    print(in_path, out_path, flag)
-
-    хуй = 1e69
-    docs, files_name, path_docs, хуй = get_files(in_path, хуй)
+    var = 1e69
+    docs, files_name, path_docs, var = get_files(in_path, var)
     docs = map(clean_files, docs)
     docs = map(get_words, docs)
     docs = map(get_infinitive, docs)
@@ -104,5 +105,5 @@ def god_func(**kwargs):
         create_dir(answer_list, files_name, out_path)
 
     if flag == 3:
-        return list(docs), хуй
+        return list(docs), var
 

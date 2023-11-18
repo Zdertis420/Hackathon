@@ -196,17 +196,16 @@ def main():
         case 1:
             process_first_task(in_path=instr, out_path=os.path.join(outstr, "docs"), flag=1)
             process_first_task(in_path=themestr, out_path=os.path.join(outstr, "themes"), flag=1)
-            # sys.exit(0) это сделает блок if __name__ == "__main__"
         case 2:
-            # _, fdn = get_files(fdn)
-            call_c([[]], [[]], 2, -1, -1, instr, themestr, outstr)
-            # sys.exit(0) это сделает блок if __name__ == "__main__"
+            fdn, ftn = 0, 0
+            _, __, ___, fdn = get_files(instr, fdn)
+            ___, __, _, ftn = get_files(themestr, ftn) 
+            print("THINGS:", fdn, ftn)
+            call_c([[]], [[]], 2, fdn, ftn, instr, themestr, outstr)
         case 3:
             docsv, first_docname = process_first_task(in_path=instr, out_path='', flag=3)
             themesv, first_themename = process_first_task(in_path=themestr, out_path='', flag=3)
-            print("THINGS:", first_docname, first_themename)
             call_c(docsv, themesv, flags, first_docname, first_themename, '', '', outstr)
-            # sys.exit(0) это сделает блок if __name__ == "__main__"
 
 
 if __name__ == "__main__":
