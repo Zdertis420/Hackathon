@@ -78,15 +78,15 @@ class MainWin(QWidget):
         # TODO: если os.system вернёт 127 (команда не найдена) - запросить путь к hack
         if self.first.isChecked():
             if os.system(f'{self.heck} --task 1 -i {self.getTextsPath()} -o {self.getOutputPath()}'):
-                sys.exit()
+                sys.exit(-1)
         elif self.second.isChecked():
-            os.system(
+            if os.system( 
                     f'{self.heck} --task 2 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}'):
-                sys.exit()
+                sys.exit(-1)
         elif self.first.isChecked() and self.second.isChecked():
-            os.system(
+            if os.system( \
                     f'{self.heck} --task 0 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}'):
-                sys.exit()
+                sys.exit(-1)
         else:
             self.response.setText('Invalid input: You should choose at least one task!')
 
