@@ -8,15 +8,31 @@ def get_files(path, var):
     files = sorted(os.listdir(path))
     docs = []
     for file in files:
-        if not os.path.isfile(f'{path}/{file}'): 
+        if not os.path.isfile(f'{path}/{file}'):
             continue
-        with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
-            f = [value.strip().upper() for value in f.readlines() if value != "\n"]
-            docs.append(f)
         try:
-            var = min(var, int(file))
+            with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
+                f = [value.strip().upper() for value in f.readlines() if value != "\n"]
+                docs.append(f)
+            try:
+                var = min(var, int(file))
+            except:
+                continue
         except:
-            continue
+            try:
+                with open(f"{path}/{file}", mode='r') as f:
+                    f = [value.strip().upper() for value in f.readlines() if value != "\n"]
+                    docs.append(f)
+                try:
+                    var = min(var, int(file))
+                except:
+                    continue
+            except:
+                docs.append(['', '', ''])
+                try:
+                    var = min(var, int(file))
+                except:
+                    continue
 
     return docs, files, path, var
 
@@ -104,4 +120,3 @@ def god_func(**kwargs):
 
     if flag == 3:
         return list(docs), var
-
