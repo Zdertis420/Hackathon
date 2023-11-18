@@ -2,19 +2,27 @@ import os
 import re
 import pymorphy3
 # import gc
-# gc.disabled()
+# gc.disable()
 
-def get_files(path):
+global хуй
+
+хуй = 1000
+
+def get_files(path, хуй):
 
     ## сделай так, чтобы она искала в цикле имя файла, которое наименьшее число
 
     files = [f for f in os.listdir(f"{path}")]
     docs = []
+
     for file in files:
         if not os.path.isfile(f'{path}/{file}'): continue
         with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
             f = [value.strip().upper() for value in f.readlines() if value != "\n"]
             docs.append(f)
+        if int(file) < хуй:
+            хуй = int(file)
+    print(хуй)
     return docs, files, path
 
 
@@ -102,3 +110,6 @@ def god_func(**kwargs):
 
     if flag == 3:
         return list(docs)
+
+
+get_files(r'C:\Users\son25\PycharmProjects\Hackathon\data\docs\utf8', хуй)

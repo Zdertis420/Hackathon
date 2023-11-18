@@ -75,12 +75,12 @@ class MainWin(QWidget):
               self.getTopicsPath(),
               self.getOutputPath())
 
-        if self.first.checkState():
+        if self.first.isChecked():
             os.system(f'{self.heck} --task 1 -i {self.getTextsPath()} -o {self.getOutputPath()}')
-        elif self.second.checkState():
+        elif self.second.isChecked():
             os.system(
                 f'{self.heck} --task 2 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}')
-        elif self.first.stateChanged() and self.second.stateChanged():
+        elif self.first.isChecked() and self.second.isChecked():
             os.system(
                 f'{self.heck} --task 0 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}')
         else:
@@ -89,6 +89,10 @@ class MainWin(QWidget):
     def setup(self):
         self.setGeometry(300, 300, 800, 400)
         self.setWindowTitle('Hackathon')
+
+        self.firstPath = QLabel(self)
+        self.firstPath.setText("Texts' path here")
+        self.firstPath.move(40, 20)
 
         self.textPath = QLineEdit(self)
         self.textPath.move(40, 40)
@@ -100,6 +104,10 @@ class MainWin(QWidget):
         self.textBrowse.resize(100, 30)
         self.textBrowse.clicked.connect(self.browseTextsPath)  # YOU KNOW WHAT?? FUCK YOU ITS TOTALLY VALID
 
+        self.secondPath = QLabel(self)
+        self.secondPath.setText("Topics' path here")
+        self.secondPath.move(40, 80)
+
         self.topicPath = QLineEdit(self)
         self.topicPath.setEnabled(False)
         self.topicPath.move(40, 100)
@@ -110,7 +118,11 @@ class MainWin(QWidget):
         self.topicBrowse.setText('Browse')
         self.topicBrowse.move(680, 100)
         self.topicBrowse.resize(100, 30)
-        self.topicBrowse.clicked.connect(self.browseTopicsPath)
+        self.topicBrowse.clicked.connect(self.browseTopicsPath)  # stupid bitch
+
+        self.thirdPath = QLabel(self)
+        self.thirdPath.setText("Output's path here")
+        self.thirdPath.move(40, 140)
 
         self.outputPath = QLineEdit(self)
         self.outputPath.move(40, 160)
@@ -120,7 +132,7 @@ class MainWin(QWidget):
         self.outputBrowse.setText('Browse')
         self.outputBrowse.move(680, 160)
         self.outputBrowse.resize(100, 30)
-        self.outputBrowse.clicked.connect(self.browseOutputsPath)
+        self.outputBrowse.clicked.connect(self.browseOutputsPath)  # .....
 
         self.first = QCheckBox(self)
         self.first.setText('Do first')
@@ -131,7 +143,7 @@ class MainWin(QWidget):
         self.second.setText('Do second')
         self.second.move(140, 230)
         self.second.resize(80, 40)
-        self.second.stateChanged.connect(self.toggleSecond)  # IVE ALREADY SAID IT! FUCK YOOOOU
+        self.second.stateChanged.connect(self.toggleSecond)  # IVE ALREADY SAID IT! YOU STUPID
 
         self.start = QPushButton(self)
         self.start.setText('Start')
@@ -141,8 +153,9 @@ class MainWin(QWidget):
 
         self.response = QLabel(self)
         self.response.setText('')
-        self.response.move(40, 300)
+        self.response.move(40, 250)
         self.response.resize(600, 100)
+
 
 
 app = QApplication(sys.argv)
