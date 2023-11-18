@@ -14,6 +14,7 @@
 #include <numeric>
 #include <utility>
 #include <cassert>
+#include <string>
 #include <vector>
 #include <tuple>
 #include <cmath>
@@ -28,8 +29,8 @@ std::cout << __FILE__ << ':' << __FUNCTION__ << ':' << __LINE__ << std::endl
 #endif
 
 
-using all_keys_t = std::unordered_set<std::string_view>;
-using filemap = std::unordered_map<std::string_view, uint32_t>;
+using all_keys_t = std::unordered_set<std::string>;
+using filemap = std::unordered_map<std::string, uint>;
 using filemaps = std::vector<filemap>;
 using vec = std::vector<uint32_t>;
 using vecd = std::vector<double>;
@@ -42,7 +43,8 @@ namespace internal {
 
     std::vector<vecd> get_word_costs(const std::vector<vec> &files, const axis_order &ord);
 
-    void normalize_vectors(std::vector<vec> &vectors);
+    void read_from_chars(const char*** what, uint how_much, filemap &where);
+    void read_from_files(char* foldername, filemap &where, all_keys_t &all_keys);
 
     std::tuple<std::vector<vec>, std::vector<vec>, axis_order>
     get_vectors(const all_keys_t &all_keys, const filemaps &maps, const filemaps &themes);
@@ -63,9 +65,8 @@ namespace internal {
                 m2->insert({key, 0});
             }
         }
-    }
+    } // normalize_keys
 
-    std::unordered_set<std::string_view> &&normalize_map_fields(filemap& files);
 
 } // namepsace internal
 
@@ -75,6 +76,7 @@ namespace math {
     double vector_abs(const vec &v);
     vecd normalize(const vec &v);
     double dot_product(const vec &x, const vec &y);
+    vecd sub_vector(const vecd &x, const vecd &y);
     double angle_cos(const vecd &x, const vecd &y);
 
 }// namespace math
@@ -97,7 +99,8 @@ extern "C" {
 
     const char* driver (
         uint flags,			// tasks to be done
-        uint first_filename,
+        uint first_doc_filename,
+        uint first_theme_filename,
         char*** docsv, uint docsc,		// array of documents
         char*** themesv, uint themesc,	// array of themes
         char* themes_it,    // Same as in python

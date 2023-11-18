@@ -70,23 +70,26 @@ def test_c():
 def call_c(array_docs: list[list[str]],  # Массив с документами
            array_themes: list[list[str]],  # Массив с темами
            flags: int,  # Флаги выполнения. Парсятся через аргументы командной строки.
+           fdf: int,
+           ftf: int,
            analyze_in: str,  # Путь в вводу анализированных документов. Нужен, если выполняется 2 задание отдельно от 1\
            themes_in: str,  # Путь к темам
            final_out: str  # Путь к финальному выводу. Нужен, если выполняется 2 задание.
            ):
     driver_func = lib.driver
     driver_func.argtypes = [
-        c_uint,
-        c_uint,
-        POINTER(POINTER(c_char_p)), c_uint,
-        POINTER(POINTER(c_char_p)), c_uint,
-        c_char_p, c_char_p,
+        c_uint,                             #flags
+        c_uint,                             #first_doc_filename
+        c_uint,                             #first_theme_filename
+        POINTER(POINTER(c_char_p)), c_uint, #docsv, docsc
+        POINTER(POINTER(c_char_p)), c_uint, #themesv, themesc
+        c_char_p, c_char_p, c_char_p        #themes_in, analyze_in, final_out
     ]
     driver_func.restype = c_char_p
 
     args = [
-        flags, *arrays_to_c(array_docs), *arrays_to_c(array_themes),
-        *strings_to_c(analyze_in, final_out)
+        flags, fdf, ftf, *arrays_to_c(array_docs), *arrays_to_c(array_themes),
+        *strings_to_c(themes_in, analyze_in, final_out)
     ]
     error = str(driver_func(*args))
     if not error:
@@ -98,28 +101,31 @@ def call_c(array_docs: list[list[str]],  # Массив с документам�
 def print_help():
     __help__ = '''
     PROGRAM USAGE:
-hack [analyze-docs|analyze-themes|all] -i <input-dir> -o <output-dir> [-t <theme-dir>]
+hack [analyze-docs|analyze-themes|all] -i <input-dir> -o <output-dir> -t <theme-dir>
     or
-hack --task [0|1|2] -i <input-dir> -o <output-dir> [-t <themes>]
+hack --task [0|1|2] -i <input-dir> -o <output-dir> -t <themes>
 Flag order is not strict.
 Exception: [analyze-docs|analyze-themes|all] must be first argument if present
 
 input-dir: directory with utf-8 encoded files
 output-dir: directory to which the processed files will be written
+<theme_dir>
 
-based on task, -i and -o may have different meanings as so:
+based on task, -i, -o and -t may have different meanings as so:
     --task 1:
         -i: documents to be processed
         -o: output with word count
+        -t: path to themes
     --task 2:
         -i: input with word count
         -o: output with files divided by themes
+        -t: path to ANALYZED themes (output from 1st task)
     --task 0:
         -i: documents to be processed
         -o: output with files divided by themes
+        -t: path to themes
 as you can see, if you run "hack all" or "hack --task 0", intermediate files will not be generated.
 
--t: only needed with --task 1. path to themes folder
         '''
     print(__help__)
 
@@ -186,15 +192,16 @@ def main():
 
     match flags:
         case 1:
-            process_first_task(in_path=instr, out_path=outstr, flag=1)
+            process_first_task(in_path=instr, out_path=os.path.join(outstr, "docs"), flag=1)
+            process_first_task(in_path=themestr, put_path=os.path.join(outstr, "themes"), flag=1)
             # sys.exit(0) это сделает блок if __name__ == "__main__"
         case 2:
-            call_c([[]], [[]], 2, instr, themestr, outstr)
+            call_c([[]], [[]], 2, -1, -1, instr, themestr, outstr)
             # sys.exit(0) это сделает блок if __name__ == "__main__"
         case 3:
             docsv, first_docname = process_first_task(in_path=instr, out_path='', flag=3)
-            themesv, fitst themev = process_first_task(in_path=themestr, out_path='', flag=3)
-            call_c(docsv, themesv, flags, instr,<F4> '', outstr)
+            themesv, fitst_themename = process_first_task(in_path=themestr, out_path='', flag=3)
+            call_c(docsv, themesv, flags, first_docname, first_themename, '', '', outstr)
             # sys.exit(0) это сделает блок if __name__ == "__main__"
 
 
