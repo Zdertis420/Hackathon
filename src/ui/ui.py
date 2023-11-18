@@ -18,7 +18,7 @@ class MainWin(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.heck = 'hack'
+        self.heck = './hack'
 
         self.setup()
 
@@ -75,14 +75,18 @@ class MainWin(QWidget):
               self.getTopicsPath(),
               self.getOutputPath())
 
+        # TODO: если os.system вернёт 127 (команда не найдена) - запросить путь к hack
         if self.first.isChecked():
-            os.system(f'{self.heck} --task 1 -i {self.getTextsPath()} -o {self.getOutputPath()}')
+            if os.system(f'{self.heck} --task 1 -i {self.getTextsPath()} -o {self.getOutputPath()}'):
+                sys.exit()
         elif self.second.isChecked():
             os.system(
-                f'{self.heck} --task 2 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}')
+                    f'{self.heck} --task 2 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}'):
+                sys.exit()
         elif self.first.isChecked() and self.second.isChecked():
             os.system(
-                f'{self.heck} --task 0 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}')
+                    f'{self.heck} --task 0 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}'):
+                sys.exit()
         else:
             self.response.setText('Invalid input: You should choose at least one task!')
 
