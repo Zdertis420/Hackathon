@@ -1,4 +1,4 @@
-# import gc
+import gc
 # gc.disable()
 
 import os
@@ -57,7 +57,7 @@ class MainWin(QWidget):
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
-            self.topicPath.setText(*filname)
+            self.topicPath.setText(''.join(filname))
         dialog.show()
 
     def browseOutputsPath(self):
@@ -67,7 +67,7 @@ class MainWin(QWidget):
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
-            self.outputPath.setText(*filname)
+            self.outputPath.setText(''.join(filname))
         dialog.show()
 
     def callBack(self):
@@ -162,8 +162,12 @@ class MainWin(QWidget):
 
 
 
-app = QApplication(sys.argv)
-mainWindow = MainWin()
-
-mainWindow.show()
-sys.exit(app.exec())
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    mainWindow = MainWin()
+    if len(sys.argv) == 2:
+        mainWindow.heck = sys.argv[1]
+    else:
+        print("ЗАПУСК ПРОРГАММЫ: hack-ui <path-to-hack>")
+    mainWindow.show()
+    sys.exit(app.exec())
