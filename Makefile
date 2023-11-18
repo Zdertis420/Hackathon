@@ -21,7 +21,6 @@ endif
 
 all: Makefile $(OBJDIR)/libvector.so $(OBJDIR)/app/hack $(OBJDIR)/app/hack-ui
 	@echo MAKING ALL
-	mkdir -p $(OBJDIR)
 
 venv: 
 	@echo MAKING VIRTUAL ENVIRONMENT
@@ -33,10 +32,12 @@ install: venv
 
 $(OBJDIR)/libvector.so: vector.cpp vector.hpp
 	@echo BUILDING libvector.so
+	mkdir -p $(OBJDIR)
 	g++ $(CXXFLAGS) -o "$@" $<
 
 $(OBJDIR)/app/hack: main.py process.py stopwords-ru.txt | install
 	@echo BUILING CONSOLE APPLICATION
+	mkdir -p $(OBJDIR)
 	$(PYINSTALLER) --noconfirm --onefile --name hack --console 	\
 		--distpath=build/app 					\
 		--add-data="$(PYSRCDIR)/process.py:." 	 		\
@@ -47,6 +48,7 @@ $(OBJDIR)/app/hack: main.py process.py stopwords-ru.txt | install
 	cp $(PYSRCDIR)/stopwords-ru.txt $(OBJDIR)/app
 
 $(OBJDIR)/app/hack-ui: $(UISRCDIR)/ui.py | install
+	mkdir -p $(OBJDIR)
 	@echo BUILDING UI
 	$(PYINSTALLER) --noconfirm --onefile --name hack-ui	\
 		--distpath=build/app			  	\

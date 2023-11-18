@@ -22,7 +22,7 @@ const char* driver (
         if (!themesv || !themesc) return "Для первого задания необходим путь и количество файлов не может быть нулевым.";
 
         internal::read_from_chars(docsv, docsc, files, all_keys);
-        internal::read_from_chars(docsv, docsc, files, all_keys);
+        internal::read_from_chars(themesv, themesc, themes, all_keys);
     }
     if (flags == 0b10)
     {
@@ -33,33 +33,22 @@ const char* driver (
         internal::read_from_files(themes_in, themes, all_keys);
 
     }
+    if (flags == 0b01 || flags == 0b00)
+    {
+        std::cerr << "what the hell are ya doin' ma boi??" << std::endl;
+        std::terminate();
+    }
 
     internal::normalize_keys(all_keys, files, themes);
     auto [files_parsed, themes_parsed, order] = internal::get_vectors(all_keys, files, themes);
 
-    auto themes_calculated = internal::get_word_costs(themes_parsed, order);
     auto files_calculated = internal::get_word_costs(files_parsed, order);
+    auto themes_calculated = internal::get_word_costs(themes_parsed, order);
 
     auto compare_result = internal::compare_themes(files_calculated, themes_calculated);
+
     internal::output_data(compare_result, final_out, first_doc_filename, first_theme_filename);
     return "";
-}
-
-void print_2d_array(char*** array, uint size)
-{
-    std::cout << "running test function...\n";
-    for(uint i = 0; i < size; ++i)
-    {
-        std::cout << "string " << i << std::endl;
-        for(char** p = array[i]; *p; ++p)
-        {
-            std::cout << p << " - " ;
-            std::cout.flush();
-            std::cout << *p << " | ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << "test function success!\n";
 }
 
 std::tuple<std::vector<vec>, std::vector<vec>, axis_order>
@@ -72,7 +61,6 @@ internal::get_vectors(const all_keys_t &all_keys, const filemaps &maps, const fi
 		order[j] = *i;
     std::vector<vec> ret1(maps.size());
     std::vector<vec> ret2(themes.size());
-    //SFD;
     for (size_t i = 0; i < maps.size(); ++i)
     {
         for (const auto& key : order)
@@ -87,7 +75,6 @@ internal::get_vectors(const all_keys_t &all_keys, const filemaps &maps, const fi
             ret2.at(i).push_back(themes.at(i).at(key));
         }
     }
-    //SFD;
     return std::make_tuple(ret1, ret2, order);
 }
 
@@ -198,6 +185,13 @@ std::vector<vecd> internal::compare_themes(
         for (size_t j = 0; j < nthemes; ++j)
         {
             ret[i][j] = math::angle_cos(costsd[i], costst[j]);
+            SANITY_CHECK(
+                std::cout << ret[i][j] << ' ';
+                for(auto x: costsd[i])
+                    std::cout << x << ' ';
+                for(auto x: costst[j])
+                    std::cout << x << ' ';
+            )
         }
     }
     return ret;
@@ -242,4 +236,21 @@ void internal::output_data(
         current_file << doc_index + i << '\t' << theme_index + min_index << std::endl;
 
     }
+}
+
+void print_2d_array(char ***array, size_t size)
+{
+    std::cout << "running test function...\n";
+    for(uint i = 0; i < size; ++i)
+    {
+        std::cout << "string " << i << std::endl;
+        for(char** p = array[i]; *p; ++p)
+        {
+            std::cout << p << " - " ;
+            std::cout.flush();
+            std::cout << *p << " | ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "test function success!\n";
 }

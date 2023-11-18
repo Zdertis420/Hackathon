@@ -22,14 +22,6 @@ class MainWin(QWidget):
 
         self.setup()
 
-    def toggleSecond(self, state):
-        if state == 2:
-            self.topicPath.setEnabled(True)
-            self.topicBrowse.setEnabled(True)
-        else:
-            self.topicPath.setEnabled(False)
-            self.topicBrowse.setEnabled(False)
-
     def getTextsPath(self):
         return self.textPath.text()
 
@@ -43,7 +35,8 @@ class MainWin(QWidget):
     def browseTextsPath(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
-        dialog.setDirectory(r'/home/main/coding/Hackaton/data/docs')
+        dialog.setDirectory(r'')
+#        dialog.setDirectory(r'/home/main/coding/Hackaton/data/docs')
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
@@ -53,7 +46,8 @@ class MainWin(QWidget):
     def browseTopicsPath(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
-        dialog.setDirectory(r'/home/main/coding/Hackaton/data/themes')
+        dialog.setDirectory(r'')
+#        dialog.setDirectory(r'/home/main/coding/Hackaton/data/themes')
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
@@ -63,7 +57,8 @@ class MainWin(QWidget):
     def browseOutputsPath(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
-        dialog.setDirectory(r'/home/main/coding/Hackaton/data')
+        dialog.setDirectory(r'')
+#        dialog.setDirectory(r'/home/main/coding/Hackaton/data')
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
@@ -71,10 +66,10 @@ class MainWin(QWidget):
         dialog.show()
 
     def callBack(self):
-        self.trash_q_label = QLabel("Processing... This may take a while")
+        self.trash_q_label = QLabel("Processing... This may take a while", self)
         # TODO: если os.system вернёт 127 (команда не найдена) - запросить путь к hack
         if self.first.isChecked():
-            if os.system(f'{self.heck} --task 1 -i {self.getTextsPath()} -o {self.getOutputPath()}'):
+            if os.system(f'{self.heck} --task 1 -i {self.getTextsPath()} -o {self.getOutputPath()} -t {self.getTopicsPath()}'):
                 sys.exit(-1)
         elif self.second.isChecked():
             if os.system( 
@@ -112,12 +107,10 @@ class MainWin(QWidget):
         self.secondPath.move(40, 80)
 
         self.topicPath = QLineEdit(self)
-        self.topicPath.setEnabled(False)
         self.topicPath.move(40, 100)
         self.topicPath.resize(610, 30)
 
         self.topicBrowse = QPushButton(self)
-        self.topicBrowse.setEnabled(False)
         self.topicBrowse.setText('Browse')
         self.topicBrowse.move(680, 100)
         self.topicBrowse.resize(100, 30)
@@ -146,7 +139,6 @@ class MainWin(QWidget):
         self.second.setText('Do second')
         self.second.move(140, 230)
         self.second.resize(80, 40)
-        self.second.stateChanged.connect(self.toggleSecond)  # IVE ALREADY SAID IT! YOU STUPID
 
         self.start = QPushButton(self)
         self.start.setText('Start')
@@ -168,5 +160,6 @@ if __name__ == "__main__":
         mainWindow.heck = sys.argv[1]
     else:
         print("ЗАПУСК ПРОРГАММЫ: hack-ui <path-to-hack>")
+        exit()
     mainWindow.show()
     sys.exit(app.exec())
