@@ -7,11 +7,13 @@ from ctypes import POINTER, pointer, cast, c_char_p, c_void_p, c_int, c_uint
 from typing import Tuple
 from random import randint
 from process import god_func as process_first_task
+from process import get_files
 
 
 npct = np.ctypeslib
 
-SHARED_LIBRARY_PATH = '/home/main/coding/Hackathon/build'
+## TODO: убрать хардкод
+SHARED_LIBRARY_PATH = '/home/main/coding/Hackaton/build/app'
 SHARED_LIBRARY_NAME = 'libvector.so'
 COMMAND_FLAGS = {"analyze-docs": 0b00000001,
                  "analyze-themes": 0b00000010,
@@ -173,8 +175,8 @@ def main():
     if not instr or not outstr:
         perror("Input and Output directories can't be empty")
         sys.exit(-1)
-    if not themestr and ((flags & 0x02) == 1):
-        perror("For the second task, themes directory must be present")
+    if not themestr:
+        perror("themes directory must be present")
         sys.exit(-1)
 
     #    docsv = [
@@ -193,14 +195,16 @@ def main():
     match flags:
         case 1:
             process_first_task(in_path=instr, out_path=os.path.join(outstr, "docs"), flag=1)
-            process_first_task(in_path=themestr, put_path=os.path.join(outstr, "themes"), flag=1)
+            process_first_task(in_path=themestr, out_path=os.path.join(outstr, "themes"), flag=1)
             # sys.exit(0) это сделает блок if __name__ == "__main__"
         case 2:
+            # _, fdn = get_files(fdn)
             call_c([[]], [[]], 2, -1, -1, instr, themestr, outstr)
             # sys.exit(0) это сделает блок if __name__ == "__main__"
         case 3:
             docsv, first_docname = process_first_task(in_path=instr, out_path='', flag=3)
-            themesv, fitst_themename = process_first_task(in_path=themestr, out_path='', flag=3)
+            themesv, first_themename = process_first_task(in_path=themestr, out_path='', flag=3)
+            print("THINGS:", first_docname, first_themename)
             call_c(docsv, themesv, flags, first_docname, first_themename, '', '', outstr)
             # sys.exit(0) это сделает блок if __name__ == "__main__"
 

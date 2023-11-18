@@ -51,29 +51,37 @@ namespace internal {
 
     template <typename Key, typename Val>
     void normalize_keys(
-            const std::unordered_set<Key> &set,
-            std::vector<std::unordered_map<Key, Val>> &maps1,
-            std::vector<std::unordered_map<Key, Val>> &maps2
+        const std::unordered_set<Key> &set,
+        std::vector<std::unordered_map<Key, Val>> &maps1,
+        std::vector<std::unordered_map<Key, Val>> &maps2
     ) {
         for(const auto& key : set)
         {
-            for(auto m1  = maps1.begin(), m2  = maps2.begin();
-                     m1 != maps1.end() && m2 != maps2.end();
-                     m1++,                m2++ )
-            {
+            for (auto m1  = maps1.begin(); m1 != maps1.end(); m1++)
                 m1->insert({key, 0});
+            for (auto m2  = maps2.begin(); m2 != maps2.end(); m2++)
                 m2->insert({key, 0});
-            }
         }
     } // normalize_keys
 
+    std::vector<vecd> compare_themes(
+        const std::vector<vecd> &costsd,
+        const std::vector<vecd> &costst
+    );
+
+    void output_data(
+        const std::vector<vecd> &docs_themes,
+        char* output_path,
+        uint doc_index,
+        uint theme_index
+    );
 
 } // namepsace internal
 
 
 namespace math {
 
-    double vector_abs(auto &v)
+    double vector_abs(const auto &v)
     {
         return std::sqrt(std::accumulate(v.cbegin(), v.cend(), 0.0,
             [] (auto acc, auto x) {
@@ -115,22 +123,21 @@ namespace math {
                / (math::vector_abs(x) * math::vector_abs(y) );
     }
 
-
 }// namespace math
-
 
 namespace dbg {
 
-    void print_map([[maybe_unused]] const auto& map) {
+    void print_map(const auto& map) {
     #ifdef  DEBUG
         std::cout << "PRINTING INFO |" << __PRETTY_FUNCTION__ << '\n';
-        for(const auto& [a, b] : map)
+        std::cout << map.size() << std::endl;
+        for(const auto& [a, b] : map){
             std::cout << a << " - " << b << std::endl;
+        }
     #endif
     }
 
 } // namespace dbg
-
 
 extern "C" {
 

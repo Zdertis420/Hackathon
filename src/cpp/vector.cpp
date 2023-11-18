@@ -1,27 +1,23 @@
 #include "vector.hpp"
 
-
 const char* driver (
     uint flags,
-    [[maybe_unused]] uint first_doc_filename,
-    [[maybe_unused]] uint first_theme_filename,
+    uint first_doc_filename,
+    uint first_theme_filename,
     char*** docsv,   uint docsc,
     char*** themesv, uint themesc,
-    [[maybe_unused]] char* themes_in,
-    [[maybe_unused]] char* analyze_in,
-    [[maybe_unused]] char* final_out
+    char* themes_in,
+    char* analyze_in,
+    char* final_out
 ) {
-
     filemaps files;
     filemaps themes;
     all_keys_t all_keys;
-
-    if (flags == 0xb11)
+    if (flags == 0b11)
     {
         files = filemaps(docsc);
         themes = filemaps(themesc);
 
-        // reading docs
         if (!docsv || !docsc) return "Для первого задания необходим путь к входным файлам и количество файлов не может быть нулевым.";
         if (!themesv || !themesc) return "Для первого задания необходим путь и количество файлов не может быть нулевым.";
 
@@ -37,34 +33,36 @@ const char* driver (
         internal::read_from_files(themes_in, themes, all_keys);
 
     }
-    dbg::print_map(files[1]);
-    dbg::print_map(themes[0]);
+    //dbg::print_map(files[0]);
+    //SFD;
+    //dbg::print_map(themes[0]);
+    std::cerr << files.at(0).size() << std::endl;
     internal::normalize_keys(all_keys, files, themes);
     auto [files_parsed, themes_parsed, order] = internal::get_vectors(all_keys, files, themes);
 
-    auto files_calculated = internal::get_word_costs(files_parsed, order);
     auto themes_calculated = internal::get_word_costs(themes_parsed, order);
+    auto files_calculated = internal::get_word_costs(files_parsed, order);
 
-
-
+    auto compare_result = internal::compare_themes(files_calculated, themes_calculated);
+    internal::output_data(compare_result, final_out, first_doc_filename, first_theme_filename);
     return "";
 }
 
 void print_2d_array(char*** array, uint size)
 {
-	std::cout << "tunning test function...\n";
+    std::cout << "running test function...\n";
     for(uint i = 0; i < size; ++i)
-	{
-		std::cout << "string " << i << std::endl;
-		for(char** p = array[i]; *p; ++p)
-		{
-			std::cout << p << " - " ;
-			std::cout.flush();
-			std::cout << *p << " | ";
-		}
-		std::cout << std::endl;
-	}
-	std::cout << "test function success!\n";
+    {
+        std::cout << "string " << i << std::endl;
+        for(char** p = array[i]; *p; ++p)
+        {
+            std::cout << p << " - " ;
+            std::cout.flush();
+            std::cout << *p << " | ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "test function success!\n";
 }
 
 std::tuple<std::vector<vec>, std::vector<vec>, axis_order>
@@ -75,19 +73,25 @@ internal::get_vectors(const all_keys_t &all_keys, const filemaps &maps, const fi
     int j = 0;
     for(auto i = all_keys.begin(); i != all_keys.end(); ++i, ++j)
 		order[j] = *i;
-
     std::vector<vec> ret1(maps.size());
     std::vector<vec> ret2(themes.size());
-    for(size_t i = 0; i < maps.size(); ++i)
-	{
+    //SFD;
+    for (size_t i = 0; i < maps.size(); ++i)
+    {
         for (const auto& key : order)
         {
-            ret1[i].push_back(maps[i].at(key));
-            ret2[i].push_back(maps[i].at(key));
+            ret1.at(i).push_back(maps.at(i).at(key));
         }
-	}
-
-    return std::make_tuple(std::move(ret1), std::move(ret2), std::move(order));
+    }
+    for (size_t i = 0; i < themes.size(); ++i)
+    {
+        for (const auto& key : order)
+        {
+            ret2.at(i).push_back(themes.at(i).at(key));
+        }
+    }
+    //SFD;
+    return std::make_tuple(ret1, ret2, order);
 }
 
 /*
@@ -107,7 +111,7 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
     auto idfs = vecd(amount_of_words);
     auto amounts = vec(amount_of_files);
 
-    // блять, главное с индексами не запутаться...
+    //блять, главное с индексами не запутаться...
     for (size_t i = 0; i < amount_of_words; ++i)
     {
         double idf = 0;
@@ -115,9 +119,14 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
         {   //amount of files containing that word
             int current_word_count = files.at(j).at(i);
             if (current_word_count /* != 0 */ ) ++idf;
-            amounts[j] += current_word_count; // calculate amount of words in file
+            amounts[j] += current_word_count;
+            // calculate amount of words in file
         }
-        idf = std::log(amount_of_files/idf); //applyintg the formula
+        if (std::abs(idf) > 0.0001)
+            idf = std::log(amount_of_files/idf); //applyintg the formula
+//        SANITY_CHECK (
+//            std::printf("index: %lu; value: %lf\n", i, idf);
+//        )
         idfs[i] = idf;
     }
 
@@ -132,7 +141,18 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
     {   // пожалуйста, заработай с первого раза...
         for (size_t word = 0; word < amount_of_words; ++word)
         {   // я тебя умоляю...
-            ret[file][word] = idfs[word] * (files.at(file).at(word) / amounts.at(file));
+            ret.at(file).at(word) =
+                idfs[word] * ( static_cast<double>( files.at(file).at(word) )
+                             / static_cast<double>( amounts.at(file)) );
+            SANITY_CHECK(
+                //SFD;
+//                std::cerr << ret[file][word]  << ' ' << files[file][word] << ' ' << idfs[word] << ' ' << amounts[file] << ' ';
+//                std::printf("return: %lf | files amount: %i | idf: %lf | amount: %i\n",
+//                            ret[file][word],
+//                            files[file][word],
+//                            idfs[word],
+//                            amounts[file] );
+            )
         }
     }
 
@@ -159,7 +179,8 @@ void internal::read_from_files(char *foldername, filemaps &where, all_keys_t &al
     fs::path path{foldername};
     for (const auto & entry: fs::directory_iterator{path})
     {
-        if (!entry.is_character_file()) continue;
+        std::cout << where.size() << std::endl;
+        if (entry.is_directory()) continue;
         std::ifstream current_file(entry.path());
         if (!current_file.is_open())
         {
@@ -179,5 +200,66 @@ void internal::read_from_files(char *foldername, filemaps &where, all_keys_t &al
             std::cerr << "COULD NOT READ INPUT FILE " << entry << std::endl;
             std::terminate();
         }
+    }
+}
+
+std::vector<vecd> internal::compare_themes(
+    const std::vector<vecd> &costsd,
+    const std::vector<vecd> &costst
+) {
+    size_t nfiles = costsd.size(),
+           nthemes = costst.size();
+    std::vector<vecd> ret(nfiles);
+    for (auto & x : ret)
+        x = vecd(nthemes);
+    for (size_t i = 0; i < nfiles; ++i)
+    {
+        for (size_t j = 0; j < nthemes; ++j)
+        {
+            ret[i][j] = math::angle_cos(costsd[i], costst[j]);
+//            SANITY_CHECK(
+//                std::cerr << ret[i][j] << ' ';
+//            )
+        }
+    }
+    return ret;
+}
+
+void internal::output_data(
+    const std::vector<vecd> &docs_themes,
+    char* output_path,
+    uint doc_index,
+    uint theme_index
+) {
+    auto path_to_files = fs::path{output_path};
+    fs::create_directories(path_to_files);
+
+    std::ofstream current_file(path_to_files / "classification");
+
+    if (!current_file.is_open())
+    {
+        std::cerr << "\e[1;91mcould not write to classification file\e[0m" << std::endl;
+        std::terminate();
+    }
+    for (size_t i = 0; i < docs_themes.size(); ++i)
+    {
+//        SANITY_CHECK(
+//            for(const auto& x : docs_themes[i]) std::cerr << x << std::endl;
+//        )
+        size_t min_index = 0;
+        size_t index = 0;
+        for (double min_value = 1.000001; //since cosine can't be greater than 1
+             index < docs_themes[i].size();
+             ++index)
+        {
+            if (min_value <= docs_themes.at(i).at(index))
+            {
+                min_value = docs_themes.at(i).at(index);
+                min_index = index;
+            }
+        }
+
+        current_file << doc_index + i << '\t' << theme_index + min_index << std::endl;
+
     }
 }

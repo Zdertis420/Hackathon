@@ -1,29 +1,21 @@
 import os
 import re
 import pymorphy3
-# import gc
+import gc
 # gc.disable()
 
-global хуй
-
-хуй = 1000
-
 def get_files(path, хуй):
-
-    ## сделай так, чтобы она искала в цикле имя файла, которое наименьшее число
-
-    files = [f for f in os.listdir(f"{path}")]
+    files = [f for f in os.listdir(path)]
     docs = []
-
     for file in files:
-        if not os.path.isfile(f'{path}/{file}'): continue
+        if not os.path.isfile(f'{path}/{file}'): 
+            continue
         with open(f"{path}/{file}", mode='r', encoding='utf-8') as f:
             f = [value.strip().upper() for value in f.readlines() if value != "\n"]
             docs.append(f)
         if int(file) < хуй:
             хуй = int(file)
-    print(хуй)
-    return docs, files, path
+    return docs, files, path, хуй
 
 
 def clean_files(doc):
@@ -84,7 +76,7 @@ def new_name_dir(path):
 
 def create_dir(docs, files_name, path):
     counter = new_name_dir(path)
-    os.mkdir(f'{path}/output{counter}')
+    os.makedirs(f'{path}/output{counter}', exist_ok=True)
     for doc in range(len(docs)):
         with open(f"{path}/output{counter}/{files_name[doc]}", mode='w', encoding='utf-8') as f:
             for line in docs[doc]:
@@ -98,7 +90,10 @@ def god_func(**kwargs):
 
     ## эта функция вернёт номер первого файла в добавок
 
-    docs, files_name, path_docs = get_files(in_path)
+    print(in_path, out_path, flag)
+
+    хуй = 1e69
+    docs, files_name, path_docs, хуй = get_files(in_path, хуй)
     docs = map(clean_files, docs)
     docs = map(get_words, docs)
     docs = map(get_infinitive, docs)
@@ -109,7 +104,5 @@ def god_func(**kwargs):
         create_dir(answer_list, files_name, out_path)
 
     if flag == 3:
-        return list(docs)
+        return list(docs), хуй
 
-
-get_files(r'C:\Users\son25\PycharmProjects\Hackathon\data\docs\utf8', хуй)

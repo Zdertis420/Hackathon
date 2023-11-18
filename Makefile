@@ -8,7 +8,7 @@ CXXSRCDIR := src/cpp
 UISRCDIR := src/ui
 OBJDIR := build
 VPATH := $(OBJDIR):$(OBJDIR)/app:$(PYSRCDIR):$(CXXSRCDIR):$(UISRCDIR)
-CXXFLAGS := -std=c++20 -O2 -shared -fPIC -Wall -Wextra -Werror
+CXXFLAGS := -std=c++20 -O0 -shared -fPIC -Wall -Wextra -Werror
 
 .PHONY: clean all remake run install
 

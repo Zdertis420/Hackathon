@@ -43,7 +43,7 @@ class MainWin(QWidget):
     def browseTextsPath(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
-        dialog.setDirectory(r'')
+        dialog.setDirectory(r'/home/main/coding/Hackaton/data/docs')
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
@@ -53,7 +53,7 @@ class MainWin(QWidget):
     def browseTopicsPath(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
-        dialog.setDirectory(r'')
+        dialog.setDirectory(r'/home/main/coding/Hackaton/data/themes')
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
@@ -63,7 +63,7 @@ class MainWin(QWidget):
     def browseOutputsPath(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
-        dialog.setDirectory(r'')
+        dialog.setDirectory(r'/home/main/coding/Hackaton/data')
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filname = dialog.selectedFiles()
@@ -71,10 +71,7 @@ class MainWin(QWidget):
         dialog.show()
 
     def callBack(self):
-        print(self.getTextsPath(),
-              self.getTopicsPath(),
-              self.getOutputPath())
-
+        self.trash_q_label = QLabel("Processing... This may take a while")
         # TODO: если os.system вернёт 127 (команда не найдена) - запросить путь к hack
         if self.first.isChecked():
             if os.system(f'{self.heck} --task 1 -i {self.getTextsPath()} -o {self.getOutputPath()}'):
@@ -89,6 +86,8 @@ class MainWin(QWidget):
                 sys.exit(-1)
         else:
             self.response.setText('Invalid input: You should choose at least one task!')
+        self.trash_q_label.close()
+        del self.trash_q_label
 
     def setup(self):
         self.setGeometry(300, 300, 800, 400)
