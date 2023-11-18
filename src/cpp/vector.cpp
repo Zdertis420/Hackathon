@@ -222,18 +222,18 @@ void internal::output_data(
             std::cerr << '\n';
         )
 
-        double min_value = 1000000;
-        size_t min_index = 0;
+        double max_value = -10;
+        size_t max_index = 0;
         for (size_t index = 0; index < docs_themes[i].size(); ++index)
         {
-            if (min_value >= docs_themes.at(i).at(index))
+            if (max_value <= docs_themes.at(i).at(index))
             {
-                min_value = docs_themes.at(i).at(index);
-                min_index = index;
+                max_value = docs_themes.at(i).at(index);
+                max_index = index;
             }
         }
 
-        current_file << doc_index + i << '\t' << theme_index + min_index << std::endl;
+        current_file << doc_index + i << '\t' << theme_index + max_index << std::endl;
 
     }
 }
