@@ -43,8 +43,8 @@ namespace internal {
 
     std::vector<vecd> get_word_costs(const std::vector<vec> &files, const axis_order &ord);
 
-    void read_from_chars(const char*** what, uint how_much, filemap &where);
-    void read_from_files(char* foldername, filemap &where, all_keys_t &all_keys);
+    void read_from_chars(char*** what, uint how_much, filemaps &where, all_keys_t &all_keys);
+    void read_from_files(char* foldername, filemaps &where, all_keys_t &all_keys);
 
     std::tuple<std::vector<vec>, std::vector<vec>, axis_order>
     get_vectors(const all_keys_t &all_keys, const filemaps &maps, const filemaps &themes);
@@ -73,11 +73,48 @@ namespace internal {
 
 namespace math {
 
-    double vector_abs(const vec &v);
-    vecd normalize(const vec &v);
-    double dot_product(const vec &x, const vec &y);
-    vecd sub_vector(const vecd &x, const vecd &y);
-    double angle_cos(const vecd &x, const vecd &y);
+    double vector_abs(auto &v)
+    {
+        return std::sqrt(std::accumulate(v.cbegin(), v.cend(), 0.0,
+            [] (auto acc, auto x) {
+                return acc + x*x;
+            }));
+    }
+    vecd normalize(const auto &v)
+    {
+        const double abs = vector_abs(v);
+        auto ret = vecd();
+        ret.reserve(v.size());
+        std::for_each(v.cbegin(), v.cend(), [abs, &ret] (auto x) {ret.push_back(x/abs);} );
+#ifdef DEBUG
+        assert( std::abs(vector_abs(v) - 1) < 0.0001 );
+#endif
+        return ret;
+    }
+    double dot_product(const auto &x, const auto &y)
+    {
+        double ret = 0;
+        assert(x.size() == y.size());
+        for(size_t i = 0; i < x.size(); ++i)
+            ret += (x[i]*y[i]);
+        return ret;
+    }
+    vecd sub_vector(const auto &x, const auto &y)
+    {
+        assert(x.size() == y.size());
+        size_t vdim = x.size();
+        decltype(x) ret(vdim);
+        for (size_t i = 0; i < vdim; ++i)
+            ret[i] = x[i]-y[i];
+        return ret;
+    }
+    double angle_cos(const auto &x, const auto &y)
+    {
+        // cos(a) = |x * y| / sqrt(|x|*|y|);
+        return std::abs( math::dot_product(x, y) )
+               / (math::vector_abs(x) * math::vector_abs(y) );
+    }
+
 
 }// namespace math
 

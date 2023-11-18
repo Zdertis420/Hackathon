@@ -25,16 +25,16 @@ const char* driver (
         if (!docsv || !docsc) return "Для первого задания необходим путь к входным файлам и количество файлов не может быть нулевым.";
         if (!themesv || !themesc) return "Для первого задания необходим путь и количество файлов не может быть нулевым.";
 
-        read_from_chars(docsv, docsc, files, all_keys);
-        read_from_chars(docsv, docsc, files, all_keys);
+        internal::read_from_chars(docsv, docsc, files, all_keys);
+        internal::read_from_chars(docsv, docsc, files, all_keys);
     }
     if (flags == 0b10)
     {
         if (!analyze_in) return "При выполнении второго задания отдельно от первого, необходимо предоставить путь до проанализированных файлов";
         if (!themes_in) return "При выполнении второго задания отдельно от первого, необходимо предоставить путь до папки с проанализированными темами";
 
-        read_from_files(analyze_in, files, all_keys);
-        read_from_files(themes_in, themes, all_keys);
+        internal::read_from_files(analyze_in, files, all_keys);
+        internal::read_from_files(themes_in, themes, all_keys);
 
     }
     dbg::print_map(files[1]);
@@ -139,37 +139,7 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
     return ret;
 }
 
-double math::vector_abs(const vec &v)
-{
-    return std::sqrt(std::accumulate(v.cbegin(), v.cend(), 0.0,
-        [] (auto acc, auto x) {
-            return acc + x*x;
-    }));
-}
-
-
-vecd math::normalize(const vec &v)
-{
-    const double abs = vector_abs(v);
-    auto ret = vecd();
-    ret.reserve(v.size());
-    std::for_each(v.cbegin(), v.cend(), [abs, &ret] (auto x) {ret.push_back(x/abs);} );
-#ifdef DEBUG
-    assert( std::abs(vector_abs(v) - 1) < 0.0001 );
-#endif
-    return ret;
-}
-
-double math::dot_product(const vec &x, const vec &y)
-{
-    double ret = 0;
-    assert(x.size() == y.size());
-    for(size_t i = 0; i < x.size(); ++i)
-        ret += (x[i]*y[i]);
-    return ret;
-}
-
-void internal::read_from_chars(const char ***what, uint how_much, filemaps &where, all_keys_t &all_keys)
+void internal::read_from_chars(char ***what, uint how_much, filemaps &where, all_keys_t &all_keys)
 {
     // вынести вверх
     //if (!docsv || !docsc) return "Для первого задания необходим путь к входным файлам и количество файлов не может быть нулевым.";
@@ -190,7 +160,7 @@ void internal::read_from_files(char *foldername, filemaps &where, all_keys_t &al
     for (const auto & entry: fs::directory_iterator{path})
     {
         if (!entry.is_character_file()) continue;
-        std::ifstream current_file(entry);
+        std::ifstream current_file(entry.path());
         if (!current_file.is_open())
         {
             std::cerr << "COULD NOT OPEN INPUT FILE " << entry << std::endl;
@@ -204,27 +174,10 @@ void internal::read_from_files(char *foldername, filemaps &where, all_keys_t &al
             where.back().insert({key, amount});
             all_keys.insert(key);
         }
-        if (!file.eof())
+        if (!current_file.eof())
         {
             std::cerr << "COULD NOT READ INPUT FILE " << entry << std::endl;
             std::terminate();
         }
     }
-}
-
-vecd math::sub_vector(const vecd &x, const vecd &y)
-{
-    assers(x.size() == y.size());
-    size_t vdim = s.size();
-    vecd ret(vdim);
-    for (size_t i = 0; i < vdim; ++i)
-        ret[i] = x[i]-y[i];
-    return ret;
-}
-
-double math::angle_cos(const vecd &x, const vecd &y)
-{
-    // cos(a) = |x * y| / sqrt(|x|*|y|);
-    return std::abs( math::dot_product(x, y) )
-           / (math::vector_abs(x) * math::vector_abs(y) );
 }
