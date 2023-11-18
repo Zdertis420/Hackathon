@@ -5,7 +5,7 @@ import gc
 # gc.disable()
 
 def get_files(path, var):
-    files = [f for f in os.listdir(path)]
+    files = sorted(os.listdir(path))
     docs = []
     for file in files:
         if not os.path.isfile(f'{path}/{file}'): 
@@ -23,7 +23,6 @@ def get_files(path, var):
 
 def clean_files(doc):
     doc = list(map(lambda s: re.sub(r'[^a-zA-Zа-яА-ЯёЁ\s]', '', s), doc))
-
     return doc
 
 
@@ -31,7 +30,6 @@ def get_words(doc):
     docs_words = []
     for string in doc:
         docs_words.extend(string.split())
-
     return docs_words
 
 

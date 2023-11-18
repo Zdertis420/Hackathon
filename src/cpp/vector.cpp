@@ -95,7 +95,7 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
     auto idfs = vecd(amount_of_words);
     auto amounts = vec(amount_of_files);
 
-    //блять, главное с индексами не запутаться...
+    //*****, главное с индексами не запутаться...
     for (size_t i = 0; i < amount_of_words; ++i)
     {
         double idf = 0;
@@ -115,8 +115,8 @@ std::vector<vecd> internal::get_word_costs(const std::vector<vec> &files, const 
     std::vector<vecd> ret(amount_of_files);
     for (auto& x : ret) x = vecd(amount_of_words);
 
-    // Надо, блять, духовно расти
-    //        Иначе пиздец
+    // Надо, *****, духовно расти
+    //        Иначе ******
 
     for (size_t file = 0; file < amount_of_files; ++file)
     {   // пожалуйста, заработай с первого раза...
