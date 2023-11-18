@@ -45,6 +45,12 @@ make
 * `LD_LIBRARY_PATH=<...>/build/app <...>hack-ui <путь к конскольному приложению>` - не успели убрать костыли
 или
 * `./run-hack-ui.sh` - только из корневой директории проекта! аргумент пути предоставляется скриптом.
+# примеры использования
+* `Hachathon]$ ./run-hach.sh --help`
+* `Hackathon]$ ./run-hack.sh --task 1 -i data/docs/utf8/ -o ./temp -t data/themes/utf8/`
+* `Hackathon]$ ./run-hack.sh --task 2 -i temp/docs/output/  -o ./temp/CALCULATED -t temp/themes/output/`
+* `Hackathon]$ ./run-hack.sh --task 0 -i data/docs/utf8/  -o ./temp/CALCULATED -t data/themes/utf8/`
+
 
 # Заметки из старого README, уже неактуально
 ## Что нужно сделать?
