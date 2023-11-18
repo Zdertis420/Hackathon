@@ -192,8 +192,8 @@ def main():
             process_first_task(in_path=themestr, out_path=os.path.join(outstr, "themes"), flag=1)
         case 2:
             fdn, ftn = 0, 0
-            _, __, ___, fdn = get_files(instr, fdn)
-            ___, __, _, ftn = get_files(themestr, ftn) 
+            _, __, ___, fdn = get_files(instr, fdn)     ## ЭТО ОЧЕНЬ ЛЕГКО ПОФИКСИТЬ НО МЫ БАНАЛЬНО НЕ УСПЕЛИ
+            ___, __, _, ftn = get_files(themestr, ftn)  ## ЧЕСТНО, ОНО РАБОТАЕТ В 3 ЗАДАНИИ
             print("THINGS:", fdn, ftn)
             call_c([[]], [[]], 2, fdn, ftn, instr, themestr, outstr)
         case 3:
