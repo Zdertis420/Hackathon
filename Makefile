@@ -35,7 +35,7 @@ $(OBJDIR)/libvector.so: vector.cpp vector.hpp
 	mkdir -p $(OBJDIR)
 	g++ $(CXXFLAGS) -o "$@" $<
 
-$(OBJDIR)/app/hack: main.py process.py stopwords-ru.txt | install
+$(OBJDIR)/app/hack: main.py process.py stopwords-ru.txt | install launch
 	@echo BUILING CONSOLE APPLICATION
 	mkdir -p $(OBJDIR)
 	$(PYINSTALLER) --noconfirm --onefile --name hack --console 	\
@@ -47,13 +47,17 @@ $(OBJDIR)/app/hack: main.py process.py stopwords-ru.txt | install
 	cp $(OBJDIR)/libvector.so $(OBJDIR)/app
 	cp $(PYSRCDIR)/stopwords-ru.txt $(OBJDIR)/app
 
-$(OBJDIR)/app/hack-ui: $(UISRCDIR)/ui.py | install
+$(OBJDIR)/app/hack-ui: $(UISRCDIR)/ui.py | install launch
 	mkdir -p $(OBJDIR)
 	@echo BUILDING UI
 	$(PYINSTALLER) --noconfirm --onefile --name hack-ui	\
 		--distpath=build/app			  	\
 		--hidden-import=PyQt5				\
 		$(UISRCDIR)/ui.py
+
+launch: 
+	chmod a+x run-hack.sh
+	chmod a+x run-hack-ui.sh
 
 remake:
 	@echo REMAKING
@@ -62,10 +66,11 @@ remake:
 
 run: all
 	@echo RUNNING
-	$(OBJDIR)/app/hack --task 0 -i data/docs/utf8 -o data/output -t data/themes/utf8
+	LD_LIBRARY_PATH=$(OBJDIR)/app $(OBJDIR)/app/hack --task 0 -i data/docs/utf8 -o data/output -t data/themes/utf8
 
 clean:
 	@echo CLEANING BUILD
 	$(RM) -rf $(OBJDIR)
 	$(RM) -rf $(VENV)
+	$(RM) -f *.spec
 

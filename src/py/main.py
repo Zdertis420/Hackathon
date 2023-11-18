@@ -1,7 +1,6 @@
 import os
 import sys
 import pymorphy3 as pymorphy
-import numpy as np
 import ctypes as ct
 from ctypes import POINTER, pointer, cast, c_char_p, c_void_p, c_int, c_uint
 from typing import Tuple
@@ -9,17 +8,12 @@ from random import randint
 from process import god_func as process_first_task
 from process import get_files
 
-
-npct = np.ctypeslib
-
-## TODO: убрать хардкод
-SHARED_LIBRARY_PATH = '/home/main/coding/Hackaton/build/app'
 SHARED_LIBRARY_NAME = 'libvector.so'
 COMMAND_FLAGS = {"analyze-docs": 0b00000001,
                  "analyze-themes": 0b00000010,
                  "all": 0b00000011}
-lib = npct.load_library(SHARED_LIBRARY_NAME, SHARED_LIBRARY_PATH)
-libc = ct.CDLL("libc.so.6")  # free(pointer)
+libc = ct.CDLL("libc.so.6") 
+lib = ct.CDLL("libvector.so")
 
 
 def perror(*args, **kwargs):
